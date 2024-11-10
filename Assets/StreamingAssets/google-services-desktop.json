@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "602506567531",
+    "project_id": "opensource-4bdc4",
+    "storage_bucket": "opensource-4bdc4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602506567531:android:cc99021ab4414c6036f62e",
+        "android_client_info": {
+          "package_name": "com.company.OpenSource"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmvzr6Q02Y0TSqR7VOo4zF8usI8ON5o80"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
