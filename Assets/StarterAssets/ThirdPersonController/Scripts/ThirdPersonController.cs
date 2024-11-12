@@ -1,4 +1,7 @@
 ﻿ using UnityEngine;
+using Photon.Pun;
+using UnityEngine.Audio;
+using TMPro;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -12,7 +15,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviour
+    public class ThirdPersonController : MonoBehaviourPun
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -106,6 +109,9 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
+        public GameObject mainCam;
+        public GameObject playerFollowCamera;
+
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -122,48 +128,81 @@ namespace StarterAssets
             }
         }
 
+        private bool isAttacking=false;
+
 
         private void Awake()
         {
-            // get a reference to our main camera
-            if (_mainCamera == null)
+            if (photonView.IsMine)
             {
-                _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+                // get a reference to our main camera
+                if (_mainCamera == null)
+                {
+                    _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+                }
             }
+            else
+            {
+                mainCam.SetActive(false);
+                playerFollowCamera.SetActive(false);
+            }
+             
         }
 
         private void Start()
         {
-            _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
-            _hasAnimator = TryGetComponent(out _animator);
-            _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
-#if ENABLE_INPUT_SYSTEM 
-            _playerInput = GetComponent<PlayerInput>();
+            if (photonView.IsMine)
+            {
+                _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+
+                _hasAnimator = TryGetComponent(out _animator);
+                _controller = GetComponent<CharacterController>();
+                _input = GetComponent<StarterAssetsInputs>();
+#if ENABLE_INPUT_SYSTEM
+                _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
-            AssignAnimationIDs();
+                AssignAnimationIDs();
 
-            // reset our timeouts on start
-            _jumpTimeoutDelta = JumpTimeout;
-            _fallTimeoutDelta = FallTimeout;
+                // reset our timeouts on start
+                _jumpTimeoutDelta = JumpTimeout;
+                _fallTimeoutDelta = FallTimeout;
+            }
+               
         }
 
         private void Update()
         {
-            _hasAnimator = TryGetComponent(out _animator);
+            if (photonView.IsMine)
+            {
 
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+                _hasAnimator = TryGetComponent(out _animator);
+
+                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+                {
+                    JumpAndGravity();
+                    GroundedCheck();
+                    Move();
+                }
+                    
+            }
+
+            if (Input.GetMouseButtonDown(0) && !isAttacking)
+            {
+                _animator.SetTrigger("MoveToAttack");
+                isAttacking = true;
+            }
+
         }
 
         private void LateUpdate()
         {
-            CameraRotation();
+            if (photonView.IsMine)
+            {
+                CameraRotation();
+            }
         }
 
         private void AssignAnimationIDs()
@@ -371,22 +410,36 @@ namespace StarterAssets
 
         private void OnFootstep(AnimationEvent animationEvent)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            if (photonView.IsMine)
             {
-                if (FootstepAudioClips.Length > 0)
+                if (animationEvent.animatorClipInfo.weight > 0.5f)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    if (FootstepAudioClips.Length > 0)
+                    {
+                        var index = Random.Range(0, FootstepAudioClips.Length);
+                        AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    }
                 }
             }
+                
         }
 
         private void OnLand(AnimationEvent animationEvent)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            if (photonView.IsMine)
             {
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                if (animationEvent.animatorClipInfo.weight > 0.5f)
+                {
+                    AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                }
             }
+                
+        }
+
+        public void OnAttackEnd()
+        {
+            print("실행딤");
+            isAttacking = false;
         }
     }
 }
