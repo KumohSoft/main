@@ -186,14 +186,15 @@ namespace StarterAssets
                     GroundedCheck();
                     Move();
                 }
-                    
+
+                if (Input.GetMouseButtonDown(0) && !isAttacking)
+                {
+                    _animator.SetTrigger("MoveToAttack");
+                    isAttacking = true;
+                }
             }
 
-            if (Input.GetMouseButtonDown(0) && !isAttacking)
-            {
-                _animator.SetTrigger("MoveToAttack");
-                isAttacking = true;
-            }
+            
 
         }
 
