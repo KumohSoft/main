@@ -1,9 +1,7 @@
 ﻿ using UnityEngine;
-using UnityEngine;
 using Photon.Pun;
 using UnityEngine.Audio;
 using TMPro;
-
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -111,6 +109,9 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
+        public GameObject mainCam;
+        public GameObject playerFollowCamera;
+
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -127,6 +128,8 @@ namespace StarterAssets
             }
         }
 
+        private bool isAttacking=false;
+
 
         private void Awake()
         {
@@ -138,7 +141,12 @@ namespace StarterAssets
                     _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
                 }
             }
-               
+            else
+            {
+                mainCam.SetActive(false);
+                playerFollowCamera.SetActive(false);
+            }
+             
         }
 
         private void Start()
@@ -162,19 +170,32 @@ namespace StarterAssets
                 _jumpTimeoutDelta = JumpTimeout;
                 _fallTimeoutDelta = FallTimeout;
             }
-                
+               
         }
 
         private void Update()
         {
             if (photonView.IsMine)
             {
+
                 _hasAnimator = TryGetComponent(out _animator);
 
-                JumpAndGravity();
-                GroundedCheck();
-                Move();
+                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+                {
+                    JumpAndGravity();
+                    GroundedCheck();
+                    Move();
+                }
+
+                if (Input.GetMouseButtonDown(0) && !isAttacking)
+                {
+                    _animator.SetTrigger("MoveToAttack");
+                    isAttacking = true;
+                }
             }
+
+            
+
         }
 
         private void LateUpdate()
@@ -390,22 +411,36 @@ namespace StarterAssets
 
         private void OnFootstep(AnimationEvent animationEvent)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            if (photonView.IsMine)
             {
-                if (FootstepAudioClips.Length > 0)
+                if (animationEvent.animatorClipInfo.weight > 0.5f)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    if (FootstepAudioClips.Length > 0)
+                    {
+                        var index = Random.Range(0, FootstepAudioClips.Length);
+                        AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    }
                 }
             }
+                
         }
 
         private void OnLand(AnimationEvent animationEvent)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            if (photonView.IsMine)
             {
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                if (animationEvent.animatorClipInfo.weight > 0.5f)
+                {
+                    AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                }
             }
+                
+        }
+
+        public void OnAttackEnd()
+        {
+            print("실행딤");
+            isAttacking = false;
         }
     }
 }

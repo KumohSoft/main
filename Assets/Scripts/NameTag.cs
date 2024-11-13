@@ -8,9 +8,13 @@ public class NameTag : MonoBehaviourPunCallbacks
 
     private TextMesh textMesh;
 
-    private void Start()
+    private void Awake()
     {
         textMesh = GetComponent<TextMesh>();
+    }
+
+    private void Start()
+    {
         if(photonView.IsMine)
         {
             photonView.RPC("SetNickName", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName);

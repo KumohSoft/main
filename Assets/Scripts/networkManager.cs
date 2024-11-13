@@ -52,12 +52,14 @@ public class networkManager : MonoBehaviourPunCallbacks
         
     }
 
+    public InputField temp;
     public void Connect(string nickName)
     {
         로그인중.SetActive(true);
         loadingTextCoroutine = StartCoroutine(UpdateLoadingText(로그인중text, "로그인"));
         PhotonNetwork.ConnectUsingSettings();//시작 버튼을 누르면 연결
         PhotonNetwork.LocalPlayer.NickName = nickName;
+        //PhotonNetwork.LocalPlayer.NickName = temp.text;
     }
 
     public override void OnConnectedToMaster()
