@@ -28,12 +28,16 @@ public class networkManager : MonoBehaviourPunCallbacks
     public Button[] CellBtn;
     public Button PreviousBtn;
     public Button NextBtn;
+    public GameObject HomePanel;
+    public GameObject PlayPanel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
     public Text RoomName;
     public Text count;
     public Button[] playerBtn;
+    public GameObject[] playerchar;
+    public GameObject character;
     public Text[] ChatText;
     public InputField ChatInput;
 
@@ -73,6 +77,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         print("방 접속 완료");
         RoomPanel.SetActive(true);
+        LobbyPanel.SetActive(false);
         PlayerName.text = PhotonNetwork.LocalPlayer.NickName;
         RoomName.text = PhotonNetwork.CurrentRoom.Name;
         if (PhotonNetwork.IsMasterClient)
@@ -109,7 +114,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         LoginPanel.SetActive(false);
         LobbyPanel.SetActive(true);
         StopCoroutine(loadingTextCoroutine);//코루틴 중단
-        NickName.text = PhotonNetwork.LocalPlayer.NickName;//닉네임 text를 로컬 플레이어 닉네임으로 설정
+        NickName.text = PhotonNetwork.LocalPlayer.NickName+"님";//닉네임 text를 로컬 플레이어 닉네임으로 설정
         print(PhotonNetwork.LocalPlayer.NickName);
     }
 
@@ -142,17 +147,21 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        int roomCount = roomList.Count;
-        for (int i = 0; i < roomCount; i++)
+        if(PlayPanel.activeSelf == true)
         {
-            if (!roomList[i].RemovedFromList)
+            int roomCount = roomList.Count;
+            for (int i = 0; i < roomCount; i++)
             {
-                if (!myList.Contains(roomList[i])) myList.Add(roomList[i]);
-                else myList[myList.IndexOf(roomList[i])] = roomList[i];
+                if (!roomList[i].RemovedFromList)
+                {
+                    if (!myList.Contains(roomList[i])) myList.Add(roomList[i]);
+                    else myList[myList.IndexOf(roomList[i])] = roomList[i];
+                }
+                else if (myList.IndexOf(roomList[i]) != -1) myList.RemoveAt(myList.IndexOf(roomList[i]));
             }
-            else if (myList.IndexOf(roomList[i]) != -1) myList.RemoveAt(myList.IndexOf(roomList[i]));
+            MyListRenewal();
         }
-        MyListRenewal();
+        
     }
 
 
@@ -174,6 +183,8 @@ public class networkManager : MonoBehaviourPunCallbacks
                 {
                     playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
                 }
+                playerchar[i].SetActive(true);
+              
             }
             else
             {
@@ -289,5 +300,18 @@ public class networkManager : MonoBehaviourPunCallbacks
             for (int i = 1; i < ChatText.Length; i++) ChatText[i - 1].text = ChatText[i].text;
             ChatText[ChatText.Length - 1].text = msg;
         }
+    }
+
+
+    public void ClickPlayBTN()
+    {
+        HomePanel.SetActive(false);
+        PlayPanel.SetActive(true);
+    }
+
+    public void ClickHomeBTN()
+    {
+        HomePanel.SetActive(true);
+        PlayPanel.SetActive(false);
     }
 }
