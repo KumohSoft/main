@@ -13,6 +13,10 @@ using Photon.Pun.Demo.Cockpit;
 
 public class networkManager : MonoBehaviourPunCallbacks
 {
+    [Header("Mycharacter")]
+    public static int Mycharacter;
+    public GameObject 쥐;
+    public GameObject 고양이;
 
     public Text NickName;
     public GameObject LoginPanel;
@@ -30,6 +34,8 @@ public class networkManager : MonoBehaviourPunCallbacks
     public Button NextBtn;
     public GameObject HomePanel;
     public GameObject PlayPanel;
+    public GameObject 내정보Panel;
+    public GameObject[] GameChar1;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -40,10 +46,13 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject character;
     public Text[] ChatText;
     public InputField ChatInput;
+    public GameObject[] GameChar2;
+    public GameObject[] PlayerChar;
 
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
     bool[] playerReady = new bool[8];
+    int[] playercharint = new int[8];
     // Start is called before the first frame update
     void Start()
     {
@@ -82,9 +91,14 @@ public class networkManager : MonoBehaviourPunCallbacks
         RoomName.text = PhotonNetwork.CurrentRoom.Name;
         if (PhotonNetwork.IsMasterClient)
         {
+            SetMynumRPC(PhotonNetwork.NickName,Mycharacter);
+
             UpdateGameState(playerReady);
         }
-
+        else
+        {
+            photonView.RPC("SetMynumRPC", RpcTarget.All, PhotonNetwork.NickName, Mycharacter);
+        }
     }
     public override void OnDisconnected(DisconnectCause cause) => print("연결끊김");
 
@@ -164,6 +178,18 @@ public class networkManager : MonoBehaviourPunCallbacks
         
     }
 
+    [PunRPC]
+    void SetMynumRPC(string name, int num)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i < PhotonNetwork.PlayerList.Length && PhotonNetwork.PlayerList[i].NickName == name)
+            {
+                playercharint[i] = num;
+            }
+        }
+        UpdateGameState(playerReady);
+    }
 
     [PunRPC]
     void UpdateGameState(bool[] playerReady2)
@@ -183,8 +209,8 @@ public class networkManager : MonoBehaviourPunCallbacks
                 {
                     playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
                 }
-                playerchar[i].SetActive(true);
-              
+                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(true);
+
             }
             else
             {
@@ -307,11 +333,35 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         HomePanel.SetActive(false);
         PlayPanel.SetActive(true);
+        MyListRenewal();
     }
 
     public void ClickHomeBTN()
     {
         HomePanel.SetActive(true);
         PlayPanel.SetActive(false);
+        내정보Panel.SetActive(false);
+    }
+
+    public void ClickEnter내정보()
+    {
+        내정보Panel.SetActive(true);
+    }
+
+    public void ClickExit내정보()
+    {
+        내정보Panel.SetActive(false);
+    }
+
+    public void ClickCharactorImage(int num)
+    {
+        for(int i=0; i<2; i++)
+        {
+            GameChar1[i].SetActive(false);
+            GameChar2[i].SetActive(false);
+        }
+        GameChar1[num].SetActive(true);
+        GameChar2[num].SetActive(true);
+        Mycharacter = num;
     }
 }
