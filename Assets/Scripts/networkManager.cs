@@ -36,6 +36,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject PlayPanel;
     public GameObject ³»Á¤º¸Panel;
     public GameObject[] GameChar1;
+    public GameObject[] charSlotPanel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -48,11 +49,14 @@ public class networkManager : MonoBehaviourPunCallbacks
     public InputField ChatInput;
     public GameObject[] GameChar2;
     public GameObject[] PlayerChar;
+    
+
 
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
     bool[] playerReady = new bool[8];
     int[] playercharint = new int[8];
+    private int slotNum=0;
     // Start is called before the first frame update
     void Start()
     {
@@ -355,13 +359,32 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void ClickCharactorImage(int num)
     {
-        for(int i=0; i<2; i++)
+        for(int i=0; i<4; i++)
         {
             GameChar1[i].SetActive(false);
             GameChar2[i].SetActive(false);
+
         }
         GameChar1[num].SetActive(true);
         GameChar2[num].SetActive(true);
         Mycharacter = num;
+    }
+
+    public void ClickCharPlus(int num)
+    {
+        if(num==0&& slotNum>0)
+        {
+            slotNum--;
+        }
+        else if(num==1&& slotNum<1)
+        {
+            slotNum++;
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            charSlotPanel[i].SetActive(false);
+        }
+        charSlotPanel[slotNum].SetActive(true);
     }
 }
