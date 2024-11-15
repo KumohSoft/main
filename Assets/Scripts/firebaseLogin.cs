@@ -7,6 +7,9 @@ using Firebase;
 using Firebase.Extensions;
 using Firebase.Firestore;
 using System.Linq;
+using static Cinemachine.DocumentationSortingAttribute;
+using UnityEngine.TextCore.Text;
+using static UnityEditor.Progress;
 
 public class firebaseLogin : MonoBehaviour
 {
@@ -27,6 +30,14 @@ public class firebaseLogin : MonoBehaviour
 
     private networkManager networkManager;
 
+    public Text gold;//일단 임시로 여기 나중에 스크립트 분리
+    public Text level;
+
+    public int Level;
+    public int Gold;
+
+    PlayerInfo playerInfo;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,13 +47,14 @@ public class firebaseLogin : MonoBehaviour
             auth = FirebaseAuth.DefaultInstance;
             db = FirebaseFirestore.DefaultInstance;
             networkManager = gameObject.GetComponent<networkManager>();
+            playerInfo = new PlayerInfo();
         });
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void Create()
@@ -67,7 +79,13 @@ public class firebaseLogin : MonoBehaviour
 
             PlayerInfo newPlayer = new PlayerInfo
             {
-                NickName = nickName.text
+                NickName = nickName.text,
+                Gold = 0,
+                WinCount = 0,
+                LoseCount = 0,
+                Level = 1,
+                Character = new int[4],
+                Item = new int[4]
             };
             newdata.SetAsync(newPlayer).ContinueWithOnMainThread(task =>
             {
@@ -109,13 +127,58 @@ public class firebaseLogin : MonoBehaviour
         SignUpPanel.SetActive(false);
     }
 
+    bool sig = false;
     private void getData()
     {
         listenerRegistration = db.Collection("PlayerInfos").Document(user.Email).Listen(snapshot =>
         {
-            PlayerInfo playerInfo = snapshot.ConvertTo<PlayerInfo>();
+            PlayerInfo temp = snapshot.ConvertTo<PlayerInfo>();
+            playerInfo = temp;
             string playerNickName = playerInfo.NickName;
-            networkManager.Connect(playerNickName);
+            level.text = "Level:" + playerInfo.Level.ToString();
+            gold.text = playerInfo.Gold.ToString() + "$";
+            if (!sig)
+            {
+                sig = true;
+                networkManager.Connect(playerNickName);
+            }
+
         });
+    }
+
+    private void SavePlayerData()
+    {
+        if (user != null)
+        {
+            DocumentReference docRef = db.Collection("PlayerInfos").Document(user.Email);
+
+            // PlayerInfo 객체 전체를 Firestore에 저장
+            docRef.SetAsync(playerInfo).ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    Debug.Log("Player data updated in Firestore");
+                }
+                else
+                {
+                    Debug.LogError("Failed to update player data");
+                }
+            });
+        }
+        else
+        {
+            Debug.LogError("No user is logged in");
+        }
+    }
+
+    public void GoldPlus()
+    {
+        playerInfo.Gold++;
+        SavePlayerData();
+    }
+    public void LevelUp()
+    {
+        playerInfo.Level++;
+        SavePlayerData();
     }
 }
