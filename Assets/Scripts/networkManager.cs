@@ -13,6 +13,10 @@ using Photon.Pun.Demo.Cockpit;
 
 public class networkManager : MonoBehaviourPunCallbacks
 {
+    [Header("Mycharacter")]
+    public static int Mycharacter;
+    public GameObject 쥐;
+    public GameObject 고양이;
 
     public Text NickName;
     public GameObject LoginPanel;
@@ -30,6 +34,18 @@ public class networkManager : MonoBehaviourPunCallbacks
     public Button NextBtn;
     public GameObject HomePanel;
     public GameObject PlayPanel;
+    public GameObject 내정보Panel;
+    public GameObject 상점Panel;
+    public GameObject[] GameChar1;
+    public GameObject[] charSlotPanel;
+    public GameObject[] charSlot상점Panel;
+    public GameObject 구매확인Panel;
+    public Button[] CharactorBTN;
+    public Button[] SkillBtn;
+    public GameObject 캐릭터Panel;
+    public GameObject 스킬Panel;
+    public GameObject 상점캐릭터Panel;
+    public GameObject 상점스킬Panel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -40,10 +56,16 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject character;
     public Text[] ChatText;
     public InputField ChatInput;
+    public GameObject[] GameChar2;
+    public GameObject[] PlayerChar;
+    
+
 
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
     bool[] playerReady = new bool[8];
+    int[] playercharint = new int[8];
+    private int slotNum=0;
     // Start is called before the first frame update
     void Start()
     {
@@ -82,9 +104,14 @@ public class networkManager : MonoBehaviourPunCallbacks
         RoomName.text = PhotonNetwork.CurrentRoom.Name;
         if (PhotonNetwork.IsMasterClient)
         {
+            SetMynumRPC(PhotonNetwork.NickName,Mycharacter);
+
             UpdateGameState(playerReady);
         }
-
+        else
+        {
+            photonView.RPC("SetMynumRPC", RpcTarget.All, PhotonNetwork.NickName, Mycharacter);
+        }
     }
     public override void OnDisconnected(DisconnectCause cause) => print("연결끊김");
 
@@ -164,6 +191,18 @@ public class networkManager : MonoBehaviourPunCallbacks
         
     }
 
+    [PunRPC]
+    void SetMynumRPC(string name, int num)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i < PhotonNetwork.PlayerList.Length && PhotonNetwork.PlayerList[i].NickName == name)
+            {
+                playercharint[i] = num;
+            }
+        }
+        UpdateGameState(playerReady);
+    }
 
     [PunRPC]
     void UpdateGameState(bool[] playerReady2)
@@ -183,8 +222,8 @@ public class networkManager : MonoBehaviourPunCallbacks
                 {
                     playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
                 }
-                playerchar[i].SetActive(true);
-              
+                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(true);
+
             }
             else
             {
@@ -307,11 +346,120 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         HomePanel.SetActive(false);
         PlayPanel.SetActive(true);
+        MyListRenewal();
     }
 
     public void ClickHomeBTN()
     {
         HomePanel.SetActive(true);
         PlayPanel.SetActive(false);
+        내정보Panel.SetActive(false);
+        상점Panel.SetActive(false);
+    }
+
+    public void ClickEnter내정보()
+    {
+        상점Panel.SetActive(false);
+        내정보Panel.SetActive(true);
+        for (int i = 0; i < 4; i++)
+        {
+            if (firebaseLogin.playerInfo.Character[i] == 0)
+            {
+                CharactorBTN[i].interactable = false;
+            }
+            else
+            {
+                CharactorBTN[i].interactable = true;
+            }
+        }
+
+        for(int i=0; i<2; i++)
+        {
+            if (firebaseLogin.playerInfo.Item[i] == 0)
+            {
+                SkillBtn[i].interactable = false;
+            }
+            else
+            {
+                SkillBtn[i].interactable = true;
+            }
+        }
+    }
+
+    public void ClickExit내정보()
+    {
+        내정보Panel.SetActive(false);
+    }
+
+    public void ClickEnter상점()
+    {
+        내정보Panel.SetActive(false);
+        상점Panel.SetActive(true);
+    }
+
+    public void ClickExit상점()
+    {
+        상점Panel.SetActive(false);
+    }
+
+    public void ClickCharactorImage(int num)
+    {
+        if (firebaseLogin.playerInfo.Character[num] ==1)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                GameChar1[i].SetActive(false);
+                GameChar2[i].SetActive(false);
+
+            }
+            GameChar1[num].SetActive(true);
+            GameChar2[num].SetActive(true);
+            Mycharacter = num;
+        }
+    }
+
+    public void ClickCharPlus(int num)
+    {
+        if(num==0&& slotNum>0)
+        {
+            slotNum--;
+        }
+        else if(num==1&& slotNum<1)
+        {
+            slotNum++;
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            charSlotPanel[i].SetActive(false);
+            charSlot상점Panel[i].SetActive(false);
+        }
+        charSlotPanel[slotNum].SetActive(true);
+        charSlot상점Panel[slotNum].SetActive(true);
+    }
+
+    public void Click상점Charactor(int num)
+    {
+        구매확인Panel.SetActive(true);
+    }
+    public void Click상점CharactorExit()
+    {
+        구매확인Panel.SetActive(false);
+    }
+
+    public void 내정보스킬Click()
+    {
+        캐릭터Panel.SetActive(false);
+        스킬Panel.SetActive(true);
+        상점캐릭터Panel.SetActive(false);
+        상점스킬Panel.SetActive(true);
+    }
+
+    public void 내정보캐릭터Click()
+    {
+        캐릭터Panel.SetActive(true);
+        스킬Panel.SetActive(false);
+        상점캐릭터Panel.SetActive(true);
+        상점스킬Panel.SetActive(false);
     }
 }

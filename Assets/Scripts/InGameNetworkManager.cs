@@ -15,7 +15,23 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
-        Mycharactor = PhotonNetwork.Instantiate("Cat", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
+        if(networkManager.Mycharacter == 0 )
+        {
+            Mycharactor = PhotonNetwork.Instantiate("¡„", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
+        }
+        else if(networkManager.Mycharacter == 1 )
+        {
+            Mycharactor = PhotonNetwork.Instantiate("Cat", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
+        }
+        else if (networkManager.Mycharacter == 2)
+        {
+            Mycharactor = PhotonNetwork.Instantiate("¡¶∏Æ", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
+        }
+        else if (networkManager.Mycharacter == 3)
+        {
+            Mycharactor = PhotonNetwork.Instantiate("Tom", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
+        }
+
     }
     void Start()
     {

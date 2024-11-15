@@ -2314,6 +2314,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DemoScene
       objectReference: {fileID: 0}
+    - target: {fileID: 6965700174242026687, guid: 4c1e9b8c73032144b8995ed84ea898d7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7708454684653403569, guid: 4c1e9b8c73032144b8995ed84ea898d7, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
