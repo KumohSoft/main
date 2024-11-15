@@ -36,7 +36,10 @@ public class firebaseLogin : MonoBehaviour
     public int Level;
     public int Gold;
 
-    PlayerInfo playerInfo;
+    public static PlayerInfo playerInfo;//static으로 선언하고 networkManager에서 접근
+
+    int Charactornum;
+    int CharactorPrice;
 
     // Start is called before the first frame update
     void Start()
@@ -180,5 +183,47 @@ public class firebaseLogin : MonoBehaviour
     {
         playerInfo.Level++;
         SavePlayerData();
+    }
+    public void Click상점Charactor(int num)
+    {
+        CharactorPrice = num;
+    }
+    public void Click상점Charactor2(int num)
+    {
+        Charactornum = num;
+    }
+
+    bool skillSig = false;
+    public void Skill구매(int num)
+    {
+        if(num==1)
+        {
+            skillSig = true;
+        }
+        else
+        {
+            skillSig = false;
+        }
+    }
+    public void 구매()
+    {
+        if(playerInfo.Gold< CharactorPrice)
+        {
+            //돈이 부족함
+        }
+        else
+        {
+            if(skillSig)
+            {
+                playerInfo.Item[Charactornum] = 1;
+            }
+            else
+            {
+                playerInfo.Character[Charactornum] = 1;
+            }
+            
+            playerInfo.Gold -= CharactorPrice;
+            SavePlayerData();
+        }
     }
 }

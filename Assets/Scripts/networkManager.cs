@@ -40,6 +40,12 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject[] charSlotPanel;
     public GameObject[] charSlot상점Panel;
     public GameObject 구매확인Panel;
+    public Button[] CharactorBTN;
+    public Button[] SkillBtn;
+    public GameObject 캐릭터Panel;
+    public GameObject 스킬Panel;
+    public GameObject 상점캐릭터Panel;
+    public GameObject 상점스킬Panel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -355,6 +361,29 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         상점Panel.SetActive(false);
         내정보Panel.SetActive(true);
+        for (int i = 0; i < 4; i++)
+        {
+            if (firebaseLogin.playerInfo.Character[i] == 0)
+            {
+                CharactorBTN[i].interactable = false;
+            }
+            else
+            {
+                CharactorBTN[i].interactable = true;
+            }
+        }
+
+        for(int i=0; i<2; i++)
+        {
+            if (firebaseLogin.playerInfo.Item[i] == 0)
+            {
+                SkillBtn[i].interactable = false;
+            }
+            else
+            {
+                SkillBtn[i].interactable = true;
+            }
+        }
     }
 
     public void ClickExit내정보()
@@ -375,15 +404,18 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void ClickCharactorImage(int num)
     {
-        for(int i=0; i<4; i++)
+        if (firebaseLogin.playerInfo.Character[num] ==1)
         {
-            GameChar1[i].SetActive(false);
-            GameChar2[i].SetActive(false);
+            for (int i = 0; i < 4; i++)
+            {
+                GameChar1[i].SetActive(false);
+                GameChar2[i].SetActive(false);
 
+            }
+            GameChar1[num].SetActive(true);
+            GameChar2[num].SetActive(true);
+            Mycharacter = num;
         }
-        GameChar1[num].SetActive(true);
-        GameChar2[num].SetActive(true);
-        Mycharacter = num;
     }
 
     public void ClickCharPlus(int num)
@@ -415,4 +447,19 @@ public class networkManager : MonoBehaviourPunCallbacks
         구매확인Panel.SetActive(false);
     }
 
+    public void 내정보스킬Click()
+    {
+        캐릭터Panel.SetActive(false);
+        스킬Panel.SetActive(true);
+        상점캐릭터Panel.SetActive(false);
+        상점스킬Panel.SetActive(true);
+    }
+
+    public void 내정보캐릭터Click()
+    {
+        캐릭터Panel.SetActive(true);
+        스킬Panel.SetActive(false);
+        상점캐릭터Panel.SetActive(true);
+        상점스킬Panel.SetActive(false);
+    }
 }
