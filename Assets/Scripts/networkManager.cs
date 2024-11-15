@@ -35,8 +35,11 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject HomePanel;
     public GameObject PlayPanel;
     public GameObject 내정보Panel;
+    public GameObject 상점Panel;
     public GameObject[] GameChar1;
     public GameObject[] charSlotPanel;
+    public GameObject[] charSlot상점Panel;
+    public GameObject 구매확인Panel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -345,16 +348,29 @@ public class networkManager : MonoBehaviourPunCallbacks
         HomePanel.SetActive(true);
         PlayPanel.SetActive(false);
         내정보Panel.SetActive(false);
+        상점Panel.SetActive(false);
     }
 
     public void ClickEnter내정보()
     {
+        상점Panel.SetActive(false);
         내정보Panel.SetActive(true);
     }
 
     public void ClickExit내정보()
     {
         내정보Panel.SetActive(false);
+    }
+
+    public void ClickEnter상점()
+    {
+        내정보Panel.SetActive(false);
+        상점Panel.SetActive(true);
+    }
+
+    public void ClickExit상점()
+    {
+        상점Panel.SetActive(false);
     }
 
     public void ClickCharactorImage(int num)
@@ -384,7 +400,19 @@ public class networkManager : MonoBehaviourPunCallbacks
         for (int i = 0; i < 2; i++)
         {
             charSlotPanel[i].SetActive(false);
+            charSlot상점Panel[i].SetActive(false);
         }
         charSlotPanel[slotNum].SetActive(true);
+        charSlot상점Panel[slotNum].SetActive(true);
     }
+
+    public void Click상점Charactor(int num)
+    {
+        구매확인Panel.SetActive(true);
+    }
+    public void Click상점CharactorExit()
+    {
+        구매확인Panel.SetActive(false);
+    }
+
 }
