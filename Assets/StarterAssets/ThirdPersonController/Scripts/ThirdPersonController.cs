@@ -1,4 +1,5 @@
 ﻿ using UnityEngine;
+using UnityEngine.UI;
 using Photon.Pun;
 using UnityEngine.Audio;
 using TMPro;
@@ -116,6 +117,10 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
+        public float skillTime = 4f;
+        //public GameObject skillTimeObject;
+        public Image skillImage;
+        private bool isAttackingSkill = false;
         private bool IsCurrentDeviceMouse
         {
             get
@@ -140,6 +145,7 @@ namespace StarterAssets
                 {
                     _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
                 }
+
             }
             else
             {
@@ -169,6 +175,11 @@ namespace StarterAssets
                 // reset our timeouts on start
                 _jumpTimeoutDelta = JumpTimeout;
                 _fallTimeoutDelta = FallTimeout;
+
+                //skillTimeObject = GameObject.Find("스킬");
+                GameObject temp = GameObject.Find("다크사이트게이지");
+                skillImage = temp.GetComponent<Image>();
+
             }
                
         }
@@ -192,10 +203,28 @@ namespace StarterAssets
                     _animator.SetTrigger("MoveToAttack");
                     isAttacking = true;
                 }
+
+                if (Input.GetMouseButtonDown(1) && !isAttackingSkill)
+                {
+                   // _animator.SetTrigger("MoveToAttack");
+                    isAttackingSkill = true;
+                }
+                if (isAttackingSkill)
+                {
+                    float time = skillTime / 4;
+                    skillImage.fillAmount = time;
+                    if (skillTime > 0)
+                    {
+                        skillTime -= Time.deltaTime;
+                        if (skillTime < 0)
+                        {
+                            skillTime = 4;//스킬 time을 초기화
+                            isAttackingSkill = false;
+                            skillImage.fillAmount = 0;
+                        }
+                    }
+                }
             }
-
-            
-
         }
 
         private void LateUpdate()
