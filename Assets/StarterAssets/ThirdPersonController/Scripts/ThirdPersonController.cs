@@ -121,6 +121,7 @@ namespace StarterAssets
         //public GameObject skillTimeObject;
         public Image skillImage;
         private bool isAttackingSkill = false;
+        public Renderer[] renderers;
         private bool IsCurrentDeviceMouse
         {
             get
@@ -177,8 +178,29 @@ namespace StarterAssets
                 _fallTimeoutDelta = FallTimeout;
 
                 //skillTimeObject = GameObject.Find("스킬");
-                GameObject temp = GameObject.Find("다크사이트게이지");
-                skillImage = temp.GetComponent<Image>();
+                if(networkManager.MySkill == 0)
+                {
+                    GameObject temp1 = GameObject.Find("헤이스트");
+                    temp1.SetActive(false);
+                    GameObject temp = GameObject.Find("다크사이트");
+                    temp.SetActive(false);
+                }
+                if (networkManager.MySkill == 1)
+                {
+                    GameObject temp1 = GameObject.Find("헤이스트");
+                    temp1.SetActive(false);
+                    GameObject temp = GameObject.Find("다크사이트게이지");
+                    skillImage = temp.GetComponent<Image>();
+                }
+                else if (networkManager.MySkill == 2)
+                {
+                    GameObject temp1 = GameObject.Find("다크사이트");
+                    temp1.SetActive(false);
+                    GameObject temp = GameObject.Find("헤이스트게이지");
+                    skillImage = temp.GetComponent<Image>();
+                }
+
+                
 
             }
                
@@ -208,6 +230,35 @@ namespace StarterAssets
                 {
                    // _animator.SetTrigger("MoveToAttack");
                     isAttackingSkill = true;
+                    if(networkManager.MySkill == 1)
+                    {
+                        foreach (var renderer in renderers)
+                        {
+                            foreach (var material in renderer.materials)
+                            {
+                                material.SetFloat("_Surface", 1.0f); // 0은 Opaque, 1은 Transparent
+                                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                                material.SetInt("_ZWrite", 0);
+                                material.DisableKeyword("_ALPHATEST_ON");
+                                material.EnableKeyword("_ALPHABLEND_ON");
+                                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                                // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
+                                Color color = material.color;
+                                color.a = 0.4f;
+                                material.color = color;
+                            }
+
+                        }
+                    }
+                    else if (networkManager.MySkill == 2)
+                    {
+                        MoveSpeed = 4;
+                        SprintSpeed = 10;
+                    }
+
                 }
                 if (isAttackingSkill)
                 {
@@ -221,6 +272,34 @@ namespace StarterAssets
                             skillTime = 4;//스킬 time을 초기화
                             isAttackingSkill = false;
                             skillImage.fillAmount = 0;
+                            if (networkManager.MySkill == 1)
+                            {
+                                foreach (var renderer in renderers)
+                                {
+                                    foreach (var material in renderer.materials)
+                                    {
+                                        material.SetFloat("_Surface", 0f); // 0은 Opaque, 1은 Transparent
+                                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                                        material.SetInt("_ZWrite", 0);
+                                        material.DisableKeyword("_ALPHATEST_ON");
+                                        material.EnableKeyword("_ALPHABLEND_ON");
+                                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                                        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                                        // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
+                                        Color color = material.color;
+                                        color.a = 1f;
+                                        material.color = color;
+                                    }
+
+                                }
+                            }
+                            else if (networkManager.MySkill == 2)
+                            {
+                                MoveSpeed = 2.0f;
+                                SprintSpeed = 5.335f;
+                            }
                         }
                     }
                 }

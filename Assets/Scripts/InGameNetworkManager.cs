@@ -35,6 +35,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     }
     void Start()
     {
+       
     }
 
     void Update()

@@ -15,6 +15,7 @@ public class networkManager : MonoBehaviourPunCallbacks
 {
     [Header("Mycharacter")]
     public static int Mycharacter;
+    public static int MySkill;
     public GameObject ¡„;
     public GameObject ∞ÌæÁ¿Ã;
 
@@ -416,6 +417,12 @@ public class networkManager : MonoBehaviourPunCallbacks
             GameChar2[num].SetActive(true);
             Mycharacter = num;
         }
+    }
+
+    public void ClickSkillImage(int num)
+    {
+        MySkill = num;
+        print(num);
     }
 
     public void ClickCharPlus(int num)
