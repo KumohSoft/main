@@ -9,7 +9,6 @@ using Firebase.Firestore;
 using System.Linq;
 using static Cinemachine.DocumentationSortingAttribute;
 using UnityEngine.TextCore.Text;
-using static UnityEditor.Progress;
 
 public class firebaseLogin : MonoBehaviour
 {
@@ -41,6 +40,9 @@ public class firebaseLogin : MonoBehaviour
     int Charactornum;
     int CharactorPrice;
 
+    public Text priceText;
+    public GameObject 이미보유함Panel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,13 +55,11 @@ public class firebaseLogin : MonoBehaviour
             playerInfo = new PlayerInfo();
         });
     }
-
     // Update is called once per frame
     void Update()
     {
 
     }
-
     public void Create()
     {
         auth.CreateUserWithEmailAndPasswordAsync(signUpEmail.text, signUpPassword.text).ContinueWithOnMainThread(task =>
@@ -187,6 +187,7 @@ public class firebaseLogin : MonoBehaviour
     public void Click상점Charactor(int num)
     {
         CharactorPrice = num;
+        priceText.text = num.ToString()+"$";
     }
     public void Click상점Charactor2(int num)
     {
@@ -215,15 +216,30 @@ public class firebaseLogin : MonoBehaviour
         {
             if(skillSig)
             {
-                playerInfo.Item[Charactornum] = 1;
+                if(playerInfo.Item[Charactornum]==0)
+                {
+                    playerInfo.Item[Charactornum] = 1;
+                    playerInfo.Gold -= CharactorPrice;
+                    SavePlayerData();
+                }
+                else
+                {
+                    이미보유함Panel.SetActive(true);
+                }
             }
             else
             {
-                playerInfo.Character[Charactornum] = 1;
+                if(playerInfo.Character[Charactornum]==0)
+                {
+                    playerInfo.Character[Charactornum] = 1;
+                    playerInfo.Gold -= CharactorPrice;
+                    SavePlayerData();
+                }
+                else
+                {
+                    이미보유함Panel.SetActive(true);
+                }
             }
-            
-            playerInfo.Gold -= CharactorPrice;
-            SavePlayerData();
         }
     }
 }
