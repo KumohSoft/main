@@ -461,6 +461,14 @@ PrefabInstance:
       propertyPath: playerFollowCamera
       value: 
       objectReference: {fileID: 3481589067784930891}
+    - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      propertyPath: renderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      propertyPath: renderers.Array.data[0]
+      value: 
+      objectReference: {fileID: 4366834271542611782}
     - target: {fileID: 5930158855145388821, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -709,6 +717,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7625a67fe9926f645a2de71c4e40f713, type: 3}
+--- !u!137 &4366834271542611782 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8574611706167915169, guid: 7625a67fe9926f645a2de71c4e40f713, type: 3}
+  m_PrefabInstance: {fileID: 5360760512294944231}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8532715560756079001
 PrefabInstance:
   m_ObjectHideFlags: 0

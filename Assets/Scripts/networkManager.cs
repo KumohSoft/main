@@ -15,6 +15,7 @@ public class networkManager : MonoBehaviourPunCallbacks
 {
     [Header("Mycharacter")]
     public static int Mycharacter;
+    public static int Mycharacter2;
     public static int MySkill;
     public GameObject 쥐;
     public GameObject 고양이;
@@ -38,15 +39,19 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject 내정보Panel;
     public GameObject 상점Panel;
     public GameObject[] GameChar1;
+    public GameObject[] GameChar1고양이;
     public GameObject[] charSlotPanel;
     public GameObject[] charSlot상점Panel;
     public GameObject 구매확인Panel;
     public Button[] CharactorBTN;
     public Button[] SkillBtn;
+    public Image[] skillImage;
     public GameObject 캐릭터Panel;
     public GameObject 스킬Panel;
     public GameObject 상점캐릭터Panel;
     public GameObject 상점스킬Panel;
+    public GameObject 설정Panel;
+    public GameObject 이미보유Panel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -58,7 +63,9 @@ public class networkManager : MonoBehaviourPunCallbacks
     public Text[] ChatText;
     public InputField ChatInput;
     public GameObject[] GameChar2;
+    public GameObject[] GameChar2고양이;
     public GameObject[] PlayerChar;
+    public GameObject MakeRoomPanel; 
     
 
 
@@ -111,7 +118,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            photonView.RPC("SetMynumRPC", RpcTarget.All, PhotonNetwork.NickName, Mycharacter);
+            photonView.RPC("SetMynumRPC", RpcTarget.All, PhotonNetwork.NickName, Mycharacter);//들어오면 자신이 선택한 캐릭터 정보를 뿌린다.
         }
     }
     public override void OnDisconnected(DisconnectCause cause) => print("연결끊김");
@@ -206,7 +213,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void UpdateGameState(bool[] playerReady2)
+    void UpdateGameState(bool[] playerReady2)//레디 상황과 선택한 캐릭터를 활성화 시키는 함수
     {
         playerReady = playerReady2;
         for (int i = 0; i < 4; i++)
@@ -223,7 +230,11 @@ public class networkManager : MonoBehaviourPunCallbacks
                 {
                     playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
                 }
-                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(true);
+                for(int j=0; j<4;j++)//겹치는 문제 해결
+                {
+                    PlayerChar[i].transform.GetChild(j).gameObject.SetActive(false);
+                }
+                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(true);//플레이어가 선택한 캐릭터를 활성화해라
 
             }
             else
@@ -346,6 +357,9 @@ public class networkManager : MonoBehaviourPunCallbacks
     public void ClickPlayBTN()
     {
         HomePanel.SetActive(false);
+        상점Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        내정보Panel.SetActive(false);
         PlayPanel.SetActive(true);
         MyListRenewal();
     }
@@ -356,11 +370,15 @@ public class networkManager : MonoBehaviourPunCallbacks
         PlayPanel.SetActive(false);
         내정보Panel.SetActive(false);
         상점Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
     }
 
-    public void ClickEnter내정보()
+    public void ClickEnter내정보()//firebase의 데이터를 읽고 활성화 여부를 결정
     {
         상점Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
         내정보Panel.SetActive(true);
         for (int i = 0; i < 4; i++)
         {
@@ -395,19 +413,25 @@ public class networkManager : MonoBehaviourPunCallbacks
     public void ClickEnter상점()
     {
         내정보Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
         상점Panel.SetActive(true);
     }
 
     public void ClickExit상점()
     {
         상점Panel.SetActive(false);
+        내정보Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
+        이미보유Panel.SetActive(false);
     }
 
-    public void ClickCharactorImage(int num)
+    public void ClickCharactorImage(int num)//쥐를 선택하는 함수
     {
-        if (firebaseLogin.playerInfo.Character[num] ==1)
+        if (firebaseLogin.playerInfo.Character[2*num] ==1)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < GameChar1.Length; i++)
             {
                 GameChar1[i].SetActive(false);
                 GameChar2[i].SetActive(false);
@@ -419,8 +443,30 @@ public class networkManager : MonoBehaviourPunCallbacks
         }
     }
 
+    public void ClickCharactorImage2(int num)//고양이를 선택하는 함수
+    {
+        if (firebaseLogin.playerInfo.Character[2*num+1] == 1)
+        {
+            for (int i = 0; i < GameChar1고양이.Length; i++)
+            {
+                GameChar1고양이[i].SetActive(false);
+                GameChar2고양이[i].SetActive(false);
+
+            }
+            GameChar1고양이[num].SetActive(true);
+            GameChar2고양이[num].SetActive(true);
+            Mycharacter2 = num;
+        }
+    }
+
+
     public void ClickSkillImage(int num)
     {
+        for(int i=0; i<skillImage.Length; i++)
+        {
+            skillImage[i].gameObject.SetActive(false);
+        }
+        skillImage[num-1].gameObject.SetActive(true);
         MySkill = num;
         print(num);
     }
@@ -468,5 +514,25 @@ public class networkManager : MonoBehaviourPunCallbacks
         스킬Panel.SetActive(false);
         상점캐릭터Panel.SetActive(true);
         상점스킬Panel.SetActive(false);
+    }
+
+    public void 설정Click()
+    {
+        내정보Panel.SetActive(false);
+        상점Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
+        설정Panel.SetActive(true);
+    }
+
+    public void MakeRoomPanelClick()
+    {
+        상점Panel.SetActive(false);
+        내정보Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(true);
+    }
+    public void 이미보유PanelExit()
+    {
+        이미보유Panel.SetActive(false);
     }
 }

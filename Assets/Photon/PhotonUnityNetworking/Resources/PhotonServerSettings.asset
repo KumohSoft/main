@@ -44,6 +44,8 @@ MonoBehaviour:
   - SetNickName
   - ChatRPC
   - SetMynumRPC
+  - "Start\uC740\uC2E0"
+  - "End\uC740\uC2E0"
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

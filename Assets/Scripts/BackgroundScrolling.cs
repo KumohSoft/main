@@ -8,14 +8,18 @@ public class BackgroundScrolling : MonoBehaviour
 
     public Renderer renderer;
     public float speed = 0.2f;
-
+    public int y;
     #endregion
 
     private void Update()
     {
         float move = Time.deltaTime * speed;
         renderer.material.mainTextureOffset += Vector2.right * move;
-        renderer.material.mainTextureOffset += Vector2.up * move;
+        if(y==1)
+        {
+            renderer.material.mainTextureOffset += Vector2.up * move;
+        }
+        
 
     }
 }

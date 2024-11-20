@@ -232,26 +232,8 @@ namespace StarterAssets
                     isAttackingSkill = true;
                     if(networkManager.MySkill == 1)
                     {
-                        foreach (var renderer in renderers)
-                        {
-                            foreach (var material in renderer.materials)
-                            {
-                                material.SetFloat("_Surface", 1.0f); // 0은 Opaque, 1은 Transparent
-                                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                                material.SetInt("_ZWrite", 0);
-                                material.DisableKeyword("_ALPHATEST_ON");
-                                material.EnableKeyword("_ALPHABLEND_ON");
-                                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                                material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-                                // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
-                                Color color = material.color;
-                                color.a = 0.4f;
-                                material.color = color;
-                            }
-
-                        }
+                        photonView.RPC("Start은신", RpcTarget.All);
+                        
                     }
                     else if (networkManager.MySkill == 2)
                     {
@@ -260,7 +242,7 @@ namespace StarterAssets
                     }
 
                 }
-                if (isAttackingSkill)
+                if (isAttackingSkill&& skillImage!=null)//만약 스킬을 가지고있다면 
                 {
                     float time = skillTime / 4;
                     skillImage.fillAmount = time;
@@ -274,26 +256,7 @@ namespace StarterAssets
                             skillImage.fillAmount = 0;
                             if (networkManager.MySkill == 1)
                             {
-                                foreach (var renderer in renderers)
-                                {
-                                    foreach (var material in renderer.materials)
-                                    {
-                                        material.SetFloat("_Surface", 0f); // 0은 Opaque, 1은 Transparent
-                                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                                        material.SetInt("_ZWrite", 0);
-                                        material.DisableKeyword("_ALPHATEST_ON");
-                                        material.EnableKeyword("_ALPHABLEND_ON");
-                                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                                        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-                                        // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
-                                        Color color = material.color;
-                                        color.a = 1f;
-                                        material.color = color;
-                                    }
-
-                                }
+                                photonView.RPC("End은신", RpcTarget.All);
                             }
                             else if (networkManager.MySkill == 2)
                             {
@@ -549,6 +512,81 @@ namespace StarterAssets
         {
             print("실행딤");
             isAttacking = false;
+        }
+
+        [PunRPC]
+        public void Start은신()
+        {
+            if(photonView.IsMine)
+            {
+                foreach (var renderer in renderers)
+                {
+                    foreach (var material in renderer.materials)
+                    {
+                        material.SetFloat("_Surface", 1.0f); // 0은 Opaque, 1은 Transparent
+                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                        material.SetInt("_ZWrite", 0);
+                        material.DisableKeyword("_ALPHATEST_ON");
+                        material.EnableKeyword("_ALPHABLEND_ON");
+                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                        // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
+                        Color color = material.color;
+                        color.a = 0.4f;
+                        material.color = color;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var renderer in renderers)
+                {
+                    foreach (var material in renderer.materials)
+                    {
+                        material.SetFloat("_Surface", 1.0f); // 0은 Opaque, 1은 Transparent
+                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                        material.SetInt("_ZWrite", 0);
+                        material.DisableKeyword("_ALPHATEST_ON");
+                        material.EnableKeyword("_ALPHABLEND_ON");
+                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                        // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
+                        Color color = material.color;
+                        color.a = 0.0f;
+                        material.color = color;
+                    }
+
+                }
+            }
+        }
+
+       [PunRPC]
+       void End은신()
+        {
+            foreach (var renderer in renderers)
+            {
+                foreach (var material in renderer.materials)
+                {
+                    material.SetFloat("_Surface", 0f); // 0은 Opaque, 1은 Transparent
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    material.SetInt("_ZWrite", 1);
+                    material.DisableKeyword("_ALPHATEST_ON");
+                    material.EnableKeyword("_ALPHABLEND_ON");
+                    material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+                    // 알파(투명도)를 0으로 설정하여 투명하게 만듭니다.
+                    Color color = material.color;
+                    color.a = 1f;
+                    material.color = color;
+                }
+
+            }
         }
     }
 }

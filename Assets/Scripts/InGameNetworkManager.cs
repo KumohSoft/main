@@ -19,11 +19,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             Mycharactor = PhotonNetwork.Instantiate("쥐", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
         }
-        else if(networkManager.Mycharacter == 1 )
+        else if(networkManager.Mycharacter == 2 )
         {
-            Mycharactor = PhotonNetwork.Instantiate("Cat", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
+            Mycharactor = PhotonNetwork.Instantiate("Cat", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
         }
-        else if (networkManager.Mycharacter == 2)
+        else if (networkManager.Mycharacter == 1)
         {
             Mycharactor = PhotonNetwork.Instantiate("제리", new Vector3(-33.32f, 6.227f, -18.504f), Quaternion.identity);
         }
