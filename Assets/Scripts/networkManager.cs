@@ -52,6 +52,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject 상점스킬Panel;
     public GameObject 설정Panel;
     public GameObject 이미보유Panel;
+    public GameObject Money;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -360,6 +361,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         상점Panel.SetActive(false);
         설정Panel.SetActive(false);
         내정보Panel.SetActive(false);
+        Money.SetActive(false);
         PlayPanel.SetActive(true);
         MyListRenewal();
     }
@@ -367,6 +369,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     public void ClickHomeBTN()
     {
         HomePanel.SetActive(true);
+        Money.SetActive(true);
         PlayPanel.SetActive(false);
         내정보Panel.SetActive(false);
         상점Panel.SetActive(false);
@@ -379,6 +382,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         상점Panel.SetActive(false);
         설정Panel.SetActive(false);
         MakeRoomPanel.SetActive(false);
+        Money.SetActive(true);
         내정보Panel.SetActive(true);
         for (int i = 0; i < 4; i++)
         {
@@ -416,6 +420,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         설정Panel.SetActive(false);
         MakeRoomPanel.SetActive(false);
         상점Panel.SetActive(true);
+        Money.SetActive(true);
     }
 
     public void ClickExit상점()
@@ -425,6 +430,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         설정Panel.SetActive(false);
         MakeRoomPanel.SetActive(false);
         이미보유Panel.SetActive(false);
+        Money.SetActive(true);
     }
 
     public void ClickCharactorImage(int num)//쥐를 선택하는 함수
@@ -514,6 +520,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         스킬Panel.SetActive(false);
         상점캐릭터Panel.SetActive(true);
         상점스킬Panel.SetActive(false);
+        Money.SetActive(true);
     }
 
     public void 설정Click()
