@@ -3,36 +3,36 @@ using UnityEngine.UI;
 
 public class SliderController : MonoBehaviour
 {
-    public Slider slider; // ì—°ê²°ëœ Slider
-    public float duration = 30f; // Sliderê°€ ì±„ì›Œì§€ëŠ” ë° ê±¸ë¦¬ëŠ” ì‹œê°„
-    private float elapsedTime = 0f; // ê²½ê³¼ ì‹œê°„
-    private bool isIncreasing = false; // Sliderê°€ ì˜¬ë¼ê°€ëŠ” ìƒíƒœ
-    private bool isDecreasing = false; // Sliderê°€ ë‚´ë ¤ê°€ëŠ” ìƒíƒœ
-    private bool isCompleted = false; // Sliderê°€ ì™„ë£Œëœ ìƒíƒœ
-    public delegate void SliderCompleted(); // Slider ì™„ë£Œ ì´ë²¤íŠ¸
+    public Slider slider; // ¿¬°áµÈ Slider
+    public float duration = 30f; // Slider°¡ Ã¤¿öÁö´Â µ¥ °É¸®´Â ½Ã°£
+    private float elapsedTime = 0f; // °æ°ú ½Ã°£
+    private bool isIncreasing = false; // Slider°¡ ¿Ã¶ó°¡´Â »óÅÂ
+    private bool isDecreasing = false; // Slider°¡ ³»·Á°¡´Â »óÅÂ
+    private bool isCompleted = false; // Slider°¡ ¿Ï·áµÈ »óÅÂ
+    public delegate void SliderCompleted(); // Slider ¿Ï·á ÀÌº¥Æ®
     public event SliderCompleted OnSliderCompleted;
 
-    private CanvasGroup canvasGroup; // CanvasGroupì„ ì‚¬ìš©í•´ ìˆ¨ê¹€ ì²˜ë¦¬
+    private CanvasGroup canvasGroup; // CanvasGroupÀ» »ç¿ëÇØ ¼û±è Ã³¸®
 
     void Start()
     {
         if (slider == null)
         {
-            Debug.LogError("Sliderê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+            Debug.LogError("Slider°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
             return;
         }
 
-        slider.value = 0f; // ì´ˆê¸°ê°’ ì„¤ì •
-        slider.maxValue = 1f; // ìµœëŒ€ê°’ ì„¤ì •
+        slider.value = 0f; // ÃÊ±â°ª ¼³Á¤
+        slider.maxValue = 1f; // ÃÖ´ë°ª ¼³Á¤
 
-        // CanvasGroup ì¶”ê°€ ë˜ëŠ” ì°¸ì¡°
+        // CanvasGroup Ãß°¡ ¶Ç´Â ÂüÁ¶
         canvasGroup = slider.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
             canvasGroup = slider.gameObject.AddComponent<CanvasGroup>();
         }
 
-        HideSlider(); // ì‹œì‘ ì‹œ Slider ìˆ¨ê¹€
+        HideSlider(); // ½ÃÀÛ ½Ã Slider ¼û±è
     }
 
     void Update()
@@ -43,7 +43,7 @@ public class SliderController : MonoBehaviour
             {
                 elapsedTime += Time.deltaTime;
                 slider.value = elapsedTime / duration;
-                ShowSlider(); // ì¦ê°€ ì¤‘ì—ëŠ” Slider í‘œì‹œ
+                ShowSlider(); // Áõ°¡ Áß¿¡´Â Slider Ç¥½Ã
             }
             else
             {
@@ -55,7 +55,7 @@ public class SliderController : MonoBehaviour
             if (slider.value > 0)
             {
                 slider.value -= Time.deltaTime / duration;
-                // SliderëŠ” ê°ì†Œ ì¤‘ì—ë„ ê³„ì† ìˆ¨ê²¨ì§„ ìƒíƒœ ìœ ì§€
+                // Slider´Â °¨¼Ò Áß¿¡µµ °è¼Ó ¼û°ÜÁø »óÅÂ À¯Áö
             }
             else
             {
@@ -69,13 +69,13 @@ public class SliderController : MonoBehaviour
         if (isCompleted)
         {
             Debug.Log($"{gameObject.name} slider is already completed.");
-            return; // ì™„ë£Œëœ ìƒíƒœë¼ë©´ í™œì„±í™” ê¸ˆì§€
+            return; // ¿Ï·áµÈ »óÅÂ¶ó¸é È°¼ºÈ­ ±İÁö
         }
 
         isIncreasing = true;
         isDecreasing = false;
-        elapsedTime = slider.value * duration; // ì§„í–‰ ì¤‘ì¸ ìƒíƒœì—ì„œ ì¬ê°œ
-        ShowSlider(); // Slider í‘œì‹œ
+        elapsedTime = slider.value * duration; // ÁøÇà ÁßÀÎ »óÅÂ¿¡¼­ Àç°³
+        ShowSlider(); // Slider Ç¥½Ã
         Debug.Log($"{gameObject.name} slider is now increasing.");
     }
 
@@ -84,36 +84,36 @@ public class SliderController : MonoBehaviour
         if (isCompleted)
         {
             Debug.Log($"{gameObject.name} slider is already completed.");
-            return; // ì™„ë£Œëœ ìƒíƒœë¼ë©´ ë¹„í™œì„±í™” ê¸ˆì§€
+            return; // ¿Ï·áµÈ »óÅÂ¶ó¸é ºñÈ°¼ºÈ­ ±İÁö
         }
 
         isDecreasing = true;
         isIncreasing = false;
-        HideSlider(); // Slider ìˆ¨ê¹€
+        HideSlider(); // Slider ¼û±è
     }
 
     private void CompleteSlider()
     {
         isIncreasing = false;
-        isCompleted = true; // ì™„ë£Œ ìƒíƒœë¡œ ì„¤ì •
-        HideSlider(); // ì™„ë£Œ ì‹œ Slider ìˆ¨ê¹€
+        isCompleted = true; // ¿Ï·á »óÅÂ·Î ¼³Á¤
+        HideSlider(); // ¿Ï·á ½Ã Slider ¼û±è
 
-        OnSliderCompleted?.Invoke(); // ì™„ë£Œ ì´ë²¤íŠ¸ í˜¸ì¶œ
+        OnSliderCompleted?.Invoke(); // ¿Ï·á ÀÌº¥Æ® È£Ãâ
         Debug.Log($"{gameObject.name} slider completed!");
     }
 
     private void StopDecreasing()
     {
         isDecreasing = false;
-        HideSlider(); // Slider ìˆ¨ê¹€
+        HideSlider(); // Slider ¼û±è
     }
 
     private void ShowSlider()
     {
         if (canvasGroup != null)
         {
-            canvasGroup.alpha = 1; // Slider í‘œì‹œ
-            canvasGroup.blocksRaycasts = true; // ìƒí˜¸ì‘ìš© í—ˆìš©
+            canvasGroup.alpha = 1; // Slider Ç¥½Ã
+            canvasGroup.blocksRaycasts = true; // »óÈ£ÀÛ¿ë Çã¿ë
         }
     }
 
@@ -121,13 +121,13 @@ public class SliderController : MonoBehaviour
     {
         if (canvasGroup != null)
         {
-            canvasGroup.alpha = 0; // Slider ìˆ¨ê¹€
-            canvasGroup.blocksRaycasts = false; // ìƒí˜¸ì‘ìš© ì°¨ë‹¨
+            canvasGroup.alpha = 0; // Slider ¼û±è
+            canvasGroup.blocksRaycasts = false; // »óÈ£ÀÛ¿ë Â÷´Ü
         }
     }
 
     public bool IsCompleted()
     {
-        return isCompleted; // isCompleted ë³€ìˆ˜ ê°’ ë°˜í™˜
+        return isCompleted; // isCompleted º¯¼ö °ª ¹İÈ¯
     }
 }
