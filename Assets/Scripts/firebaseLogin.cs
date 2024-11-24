@@ -1,14 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
 using Firebase.Auth;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Firestore;
-using System.Linq;
-using static Cinemachine.DocumentationSortingAttribute;
-using UnityEngine.TextCore.Text;
+using System;
 
 public class firebaseLogin : MonoBehaviour
 {
@@ -48,11 +44,24 @@ public class firebaseLogin : MonoBehaviour
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
-            app = FirebaseApp.DefaultInstance;
-            auth = FirebaseAuth.DefaultInstance;
-            db = FirebaseFirestore.DefaultInstance;
-            networkManager = gameObject.GetComponent<networkManager>();
-            playerInfo = new PlayerInfo();
+            if (task.Result == DependencyStatus.Available)
+            {
+                var options = new AppOptions
+                {
+                    ApiKey = "AIzaSyCmvzr6Q02Y0TSqR7VOo4zF8usI8ON5o80",
+                    AppId = "1:602506567531:android:cc99021ab4414c6036f62e",
+                    ProjectId = "opensource-4bdc4"
+                };
+                app = FirebaseApp.Create(options, "AppInstance_" + Guid.NewGuid().ToString());
+                auth = FirebaseAuth.GetAuth(app);
+                db = FirebaseFirestore.GetInstance(app);
+                networkManager = gameObject.GetComponent<networkManager>();
+                playerInfo = new PlayerInfo();
+            }
+            else
+            {
+                Debug.LogError("Firebase dependency error: " + task.Result);
+            }
         });
     }
     // Update is called once per frame
@@ -240,6 +249,15 @@ public class firebaseLogin : MonoBehaviour
                     이미보유함Panel.SetActive(true);
                 }
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (listenerRegistration != null)
+        {
+            listenerRegistration.Stop();
+            listenerRegistration = null;
         }
     }
 }
