@@ -15,8 +15,8 @@ public class RandomSlider : MonoBehaviour
     private int sliderDirection = 1; // 슬라이더 이동 방향 (1: 증가, -1: 감소)
 
     // posY 계산 상수
-    private const float posYMin = -27f;
-    private const float posYMax = 21f;
+    private const float posYMin = -24f;
+    private const float posYMax = 24f;
 
     void Start()
     {
