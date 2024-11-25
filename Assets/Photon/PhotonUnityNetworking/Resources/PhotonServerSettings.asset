@@ -46,6 +46,15 @@ MonoBehaviour:
   - SetMynumRPC
   - "Start\uC740\uC2E0"
   - "End\uC740\uC2E0"
+  - "\uCE58\uC988\uC0AD\uC81C"
+  - "\uCE58\uC988\uAC1C\uC218RPC"
+  - "\uACF5\uACA9\uBC1B\uC74CRPC"
+  - LoadComplete
+  - GameStart
+  - "\uC950\uB36B\uAC1C\uC218RPC"
+  - OnLive
+  - PlayerSet
+  - "\uC950\uBAA9\uC228UpdateRPC"
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

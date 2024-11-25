@@ -16,7 +16,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviourPun
+    public class ThirdPersonController : MonoBehaviourPun, IPunObservable
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -122,6 +122,19 @@ namespace StarterAssets
         public Image skillImage;
         private bool isAttackingSkill = false;
         public Renderer[] renderers;
+
+        private int 쥐목숨 = 2;
+        private bool 쥐맞음 = false;
+        public bool live = true;
+
+        public TextMesh nickName;
+        InGameNetworkManager inGameNetworkManager;
+
+        [Header("cat")]
+        private int 쥐덫개수 = 3;
+        private GameObject 쥐덫;
+        private Text 쥐덫개수text;
+        public GameObject 쥐덫생성position;
         private bool IsCurrentDeviceMouse
         {
             get
@@ -134,17 +147,67 @@ namespace StarterAssets
             }
         }
 
-        private bool isAttacking=false;
+        public bool isAttacking = false;
 
+        private void OnCollisionEnter(Collision collision)
+        {
+           
+        }
+        private void OnTriggerEnter(Collider other)
+        {
+            ThirdPersonController parentScript = GetComponent<ThirdPersonController>();
+
+            if (photonView.IsMine && gameObject.CompareTag("mouse"))
+            {
+                Debug.Log("충돌 발생: " + other.name);
+                if (other.gameObject.CompareTag("mouseTrap"))//만약 cat이 공격하고 있다면
+                {
+                    photonView.RPC("공격받음RPC", RpcTarget.All);
+                }
+            }
+
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("mouse"))
+            {
+                Debug.Log("충돌 발생: " + other.name);
+                ThirdPersonController temp = other.GetComponent<ThirdPersonController>();
+                if (temp != null&& temp!=parentScript)
+                {
+                    print("널아님?");
+                    print(temp.live);
+                   
+                    if (temp.live == false)
+                    {
+                        print("살리긴함");
+                        temp.살림();
+                    }
+                }
+                
+            }
+        }
 
         private void Awake()
         {
+            if(PhotonNetwork.IsMasterClient)//닉네임을 아군만 표시
+            {
+                if (gameObject.CompareTag("mouse"))
+                {
+                    nickName.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if(gameObject.CompareTag("cat"))
+                {
+                    nickName.gameObject.SetActive(false);
+                }
+            }
+
             if (photonView.IsMine)
             {
                 // get a reference to our main camera
                 if (_mainCamera == null)
                 {
-                    _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+                    _mainCamera = mainCam;
                 }
 
             }
@@ -153,7 +216,6 @@ namespace StarterAssets
                 mainCam.SetActive(false);
                 playerFollowCamera.SetActive(false);
             }
-             
         }
 
         private void Start()
@@ -168,7 +230,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
                 _playerInput = GetComponent<PlayerInput>();
 #else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+			            Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
                 AssignAnimationIDs();
@@ -177,22 +239,35 @@ namespace StarterAssets
                 _jumpTimeoutDelta = JumpTimeout;
                 _fallTimeoutDelta = FallTimeout;
 
+                inGameNetworkManager = FindObjectOfType<InGameNetworkManager>();
+
                 //skillTimeObject = GameObject.Find("스킬");
-                if(networkManager.MySkill == 0)
+                if (networkManager.MySkill == 0 || gameObject.CompareTag("mouse"))
                 {
                     GameObject temp1 = GameObject.Find("헤이스트");
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트");
                     temp.SetActive(false);
+                    if(gameObject.CompareTag("mouse"))
+                    {
+                        쥐덫 = GameObject.Find("쥐덫");
+                        쥐덫.SetActive(false);
+                    }
+                            
                 }
-                if (networkManager.MySkill == 1)
+                if(gameObject.CompareTag("cat"))
+                {
+                    쥐덫 = GameObject.Find("쥐덫");
+                    쥐덫개수text = 쥐덫.GetComponentInChildren<Text>();
+                }
+                if (networkManager.MySkill == 1&&gameObject.CompareTag("cat"))
                 {
                     GameObject temp1 = GameObject.Find("헤이스트");
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트게이지");
                     skillImage = temp.GetComponent<Image>();
                 }
-                else if (networkManager.MySkill == 2)
+                else if (networkManager.MySkill == 2 && gameObject.CompareTag("cat"))
                 {
                     GameObject temp1 = GameObject.Find("다크사이트");
                     temp1.SetActive(false);
@@ -200,49 +275,50 @@ namespace StarterAssets
                     skillImage = temp.GetComponent<Image>();
                 }
 
-                
-
             }
-               
         }
 
         private void Update()
         {
             if (photonView.IsMine)
             {
-
                 _hasAnimator = TryGetComponent(out _animator);
 
-                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && live)
                 {
                     JumpAndGravity();
                     GroundedCheck();
                     Move();
                 }
 
-                if (Input.GetMouseButtonDown(0) && !isAttacking)
+                if (Input.GetMouseButtonDown(0) && !isAttacking && (gameObject.CompareTag("cat")))
                 {
                     _animator.SetTrigger("MoveToAttack");
                     isAttacking = true;
                 }
 
-                if (Input.GetMouseButtonDown(1) && !isAttackingSkill)
+                if (Input.GetMouseButtonDown(1) && !isAttackingSkill && gameObject.CompareTag("cat"))
                 {
-                   // _animator.SetTrigger("MoveToAttack");
+                    // _animator.SetTrigger("MoveToAttack");
                     isAttackingSkill = true;
-                    if(networkManager.MySkill == 1)
+                    if (networkManager.MySkill == 1)
                     {
                         photonView.RPC("Start은신", RpcTarget.All);
-                        
+
                     }
                     else if (networkManager.MySkill == 2)
                     {
                         MoveSpeed = 4;
                         SprintSpeed = 10;
                     }
-
                 }
-                if (isAttackingSkill&& skillImage!=null)//만약 스킬을 가지고있다면 
+                if (Input.GetKeyDown(KeyCode.T)&&gameObject.CompareTag("cat")&&쥐덫개수>0)
+                {
+                    PhotonNetwork.Instantiate("쥐덫1", 쥐덫생성position.transform.position, Quaternion.Euler(90, 0, 0));
+                    쥐덫개수--;
+                    쥐덫개수text.text = 쥐덫개수.ToString();
+                }
+                if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
                 {
                     float time = skillTime / 4;
                     skillImage.fillAmount = time;
@@ -263,6 +339,25 @@ namespace StarterAssets
                                 MoveSpeed = 2.0f;
                                 SprintSpeed = 5.335f;
                             }
+                        }
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    공격받음();
+                        
+                }
+                if (쥐맞음)
+                {
+                    if (skillTime > 0)
+                    {
+                        skillTime -= Time.deltaTime;
+                        if (skillTime < 0)
+                        {
+                            skillTime = 2;//스킬 time을 초기화
+                            쥐맞음 = false;
+                            MoveSpeed = 2.0f;
+                            SprintSpeed = 5.335f;
                         }
                     }
                 }
@@ -367,7 +462,7 @@ namespace StarterAssets
             if (_input.move != Vector2.zero)
             {
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
+                                    _mainCamera.transform.eulerAngles.y;
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
                     RotationSmoothTime);
 
@@ -380,7 +475,7 @@ namespace StarterAssets
 
             // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+                                new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             // update animator if using character
             if (_hasAnimator)
@@ -493,7 +588,6 @@ namespace StarterAssets
                     }
                 }
             }
-                
         }
 
         private void OnLand(AnimationEvent animationEvent)
@@ -505,19 +599,41 @@ namespace StarterAssets
                     AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
                 }
             }
-                
+        }
+            
+
+
+
+        public void 살림()
+        {
+            photonView.RPC("OnLive", RpcTarget.All);
         }
 
+        [PunRPC]
+        public void OnLive()
+        {
+            print("살아남");
+            live = true;
+            쥐목숨 = 2;
+            if (photonView.IsMine)
+            {
+                _animator.SetTrigger("DieToMove");
+                inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
+            }
+        }
+        
         public void OnAttackEnd()
         {
             print("실행딤");
             isAttacking = false;
         }
 
+
+
         [PunRPC]
         public void Start은신()
         {
-            if(photonView.IsMine)
+            if (photonView.IsMine)
             {
                 foreach (var renderer in renderers)
                 {
@@ -559,13 +675,12 @@ namespace StarterAssets
                         color.a = 0.0f;
                         material.color = color;
                     }
-
                 }
             }
         }
 
-       [PunRPC]
-       void End은신()
+        [PunRPC]
+        void End은신()
         {
             foreach (var renderer in renderers)
             {
@@ -585,8 +700,67 @@ namespace StarterAssets
                     color.a = 1f;
                     material.color = color;
                 }
-
             }
         }
+
+        public void 공격받음()
+        {
+            photonView.RPC("공격받음RPC", RpcTarget.All);
+        }
+
+        [PunRPC]
+        void 공격받음RPC()//이 코드 반응속도 때문에 수정필요할듯
+        {
+            if(!쥐맞음)
+            {
+                쥐목숨--;
+                if (쥐목숨 == 1)
+                {
+                    //이속증가
+                    쥐맞음 = true;
+                    MoveSpeed = 4;
+                    SprintSpeed = 10;
+                    if (photonView.IsMine)
+                    {
+                        inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
+                    }
+                }
+                if (쥐목숨 == 0)//왜 따로 if문을 사용?? 흠
+                {
+                    if(photonView.IsMine)
+                    {
+                        _animator.ResetTrigger("DieToMove");
+                        _animator.SetTrigger("MoveToDie");
+                    }
+                    live = false;
+                    print(live);
+                    if (photonView.IsMine)
+                    {
+                        inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
+                    }
+                    //기절
+                }
+                print(쥐목숨);
+                
+                
+            }
+
+        }
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(쥐맞음); // bool
+                stream.SendNext(쥐목숨); // int
+                stream.SendNext(live);   // bool
+            }
+            else
+            {
+                쥐맞음 = (bool)stream.ReceiveNext();
+                쥐목숨 = (int)stream.ReceiveNext();
+                live = (bool)stream.ReceiveNext();
+            }
+        }
+
     }
 }
