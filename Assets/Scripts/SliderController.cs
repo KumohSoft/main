@@ -3,22 +3,34 @@ using UnityEngine.UI;
 
 public class SliderController : MonoBehaviour
 {
+    
     public Slider slider; // 연결된 Slider
     public RandomSlider randomSlider; // RandomSlider 연결
     public float duration = 30f; // Slider가 채워지는 데 걸리는 시간
-    private float elapsedTime = 0f; // 경과 시간
     private bool isIncreasing = false; // Slider가 올라가는 상태
     private bool isDecreasing = false; // Slider가 내려가는 상태
+    private float elapsedTime = 0f; // 경과 시간
     private bool isCompleted = false; // Slider가 완료된 상태
     public delegate void SliderCompleted(); // Slider 완료 이벤트
     public event SliderCompleted OnSliderCompleted;
-
     private CanvasGroup canvasGroup; // CanvasGroup을 사용해 숨김 처리
     private float randomSliderTimer = 0f; // RandomSlider 표시 타이머
     private float randomSliderDelay; // RandomSlider 활성화 대기 시간
 
     void Start()
 {
+    
+    isIncreasing = false; // 시작 시 증가 상태 비활성화
+    isCompleted = false; // 시작 시 완료 상태 초기화
+    
+    canvasGroup = slider.GetComponent<CanvasGroup>();
+    if (canvasGroup == null)
+    {
+        canvasGroup = slider.gameObject.AddComponent<CanvasGroup>();
+    }
+
+    HideSlider(); // 시작 시 Slider 숨김
+    
     if (slider == null)
     {
         Debug.LogError("Slider가 연결되지 않았습니다.");
@@ -27,17 +39,6 @@ public class SliderController : MonoBehaviour
 
     slider.value = 0f; // 초기값 설정
     slider.maxValue = 100f; // 최대값 설정
-    isIncreasing = false; // 시작 시 증가 상태 비활성화
-    isCompleted = false; // 시작 시 완료 상태 초기화
-
-    // CanvasGroup 추가 또는 참조
-    canvasGroup = slider.GetComponent<CanvasGroup>();
-    if (canvasGroup == null)
-    {
-        canvasGroup = slider.gameObject.AddComponent<CanvasGroup>();
-    }
-
-    HideSlider(); // 시작 시 Slider 숨김
 
     if (randomSlider != null)
     {

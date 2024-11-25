@@ -281,12 +281,12 @@ GameObject:
   - component: {fileID: 7011954842912295760}
   - component: {fileID: 7011954842912295761}
   m_Layer: 5
-  m_Name: r_slider3
+  m_Name: r_slider1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7011954842912295767
 RectTransform:
   m_ObjectHideFlags: 0
@@ -377,7 +377,7 @@ MonoBehaviour:
   slider: {fileID: 7011954842912295760}
   imageRectTransform: {fileID: 7011954843057118201}
   statusText: {fileID: 7011954842750196228}
-  linkedSliderController: {fileID: 5471663776566624706, guid: 2486c0652c353c541b0f36a2730eb307, type: 3}
+  linkedSliderController: {fileID: 5471663776566624706, guid: 5b9bfe00efea00c4cbc32880ee0f2157, type: 3}
   rangeLength: 40
 --- !u!1 &7011954843057118200
 GameObject:

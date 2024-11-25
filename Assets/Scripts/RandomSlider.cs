@@ -20,7 +20,6 @@ public class RandomSlider : MonoBehaviour
 
     void Start()
     {
-        DeactivateRandomSlider(); // 시작 시 비활성화
         UpdateStatusText(); // 텍스트를 초기화
     }
 

@@ -21,7 +21,6 @@ public class SliderActivator : MonoBehaviour
 
     sliderController.OnSliderCompleted += OnSliderCompleted; // Slider 완료 이벤트 구독
 
-    // 슬라이더를 비활성화 상태로 시작
     sliderController.StartDecreasing(); 
 }
 
