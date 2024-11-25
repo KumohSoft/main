@@ -3,37 +3,49 @@ using UnityEngine.UI;
 
 public class SliderController : MonoBehaviour
 {
-    public Slider slider; // ¿¬°áµÈ Slider
-    public float duration = 30f; // Slider°¡ Ã¤¿öÁö´Â µ¥ °É¸®´Â ½Ã°£
-    private float elapsedTime = 0f; // °æ°ú ½Ã°£
-    private bool isIncreasing = false; // Slider°¡ ¿Ã¶ó°¡´Â »óÅÂ
-    private bool isDecreasing = false; // Slider°¡ ³»·Á°¡´Â »óÅÂ
-    private bool isCompleted = false; // Slider°¡ ¿Ï·áµÈ »óÅÂ
-    public delegate void SliderCompleted(); // Slider ¿Ï·á ÀÌº¥Æ®
+    public Slider slider; // ì—°ê²°ëœ Slider
+    public RandomSlider randomSlider; // RandomSlider ì—°ê²°
+    public float duration = 30f; // Sliderê°€ ì±„ì›Œì§€ëŠ” ë° ê±¸ë¦¬ëŠ” ì‹œê°„
+    private float elapsedTime = 0f; // ê²½ê³¼ ì‹œê°„
+    private bool isIncreasing = false; // Sliderê°€ ì˜¬ë¼ê°€ëŠ” ìƒíƒœ
+    private bool isDecreasing = false; // Sliderê°€ ë‚´ë ¤ê°€ëŠ” ìƒíƒœ
+    private bool isCompleted = false; // Sliderê°€ ì™„ë£Œëœ ìƒíƒœ
+    public delegate void SliderCompleted(); // Slider ì™„ë£Œ ì´ë²¤íŠ¸
     public event SliderCompleted OnSliderCompleted;
 
-    private CanvasGroup canvasGroup; // CanvasGroupÀ» »ç¿ëÇØ ¼û±è Ã³¸®
+    private CanvasGroup canvasGroup; // CanvasGroupì„ ì‚¬ìš©í•´ ìˆ¨ê¹€ ì²˜ë¦¬
+    private float randomSliderTimer = 0f; // RandomSlider í‘œì‹œ íƒ€ì´ë¨¸
+    private float randomSliderDelay; // RandomSlider í™œì„±í™” ëŒ€ê¸° ì‹œê°„
 
     void Start()
+{
+    if (slider == null)
     {
-        if (slider == null)
-        {
-            Debug.LogError("Slider°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
-            return;
-        }
-
-        slider.value = 0f; // ÃÊ±â°ª ¼³Á¤
-        slider.maxValue = 1f; // ÃÖ´ë°ª ¼³Á¤
-
-        // CanvasGroup Ãß°¡ ¶Ç´Â ÂüÁ¶
-        canvasGroup = slider.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-        {
-            canvasGroup = slider.gameObject.AddComponent<CanvasGroup>();
-        }
-
-        HideSlider(); // ½ÃÀÛ ½Ã Slider ¼û±è
+        Debug.LogError("Sliderê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+        return;
     }
+
+    slider.value = 0f; // ì´ˆê¸°ê°’ ì„¤ì •
+    slider.maxValue = 100f; // ìµœëŒ€ê°’ ì„¤ì •
+    isIncreasing = false; // ì‹œì‘ ì‹œ ì¦ê°€ ìƒíƒœ ë¹„í™œì„±í™”
+    isCompleted = false; // ì‹œì‘ ì‹œ ì™„ë£Œ ìƒíƒœ ì´ˆê¸°í™”
+
+    // CanvasGroup ì¶”ê°€ ë˜ëŠ” ì°¸ì¡°
+    canvasGroup = slider.GetComponent<CanvasGroup>();
+    if (canvasGroup == null)
+    {
+        canvasGroup = slider.gameObject.AddComponent<CanvasGroup>();
+    }
+
+    HideSlider(); // ì‹œì‘ ì‹œ Slider ìˆ¨ê¹€
+
+    if (randomSlider != null)
+    {
+        randomSlider.DeactivateRandomSlider(); // RandomSlider ì´ˆê¸°í™”
+    }
+}
+
+
 
     void Update()
     {
@@ -42,8 +54,10 @@ public class SliderController : MonoBehaviour
             if (elapsedTime < duration)
             {
                 elapsedTime += Time.deltaTime;
-                slider.value = elapsedTime / duration;
-                ShowSlider(); // Áõ°¡ Áß¿¡´Â Slider Ç¥½Ã
+                slider.value = Mathf.Clamp((elapsedTime / duration) * 100f, 0, 100f); // Valueë¥¼ 0~100 ë²”ìœ„ë¡œ ì¡°ì •
+                ShowSlider(); // ì¦ê°€ ì¤‘ì—ëŠ” Slider í‘œì‹œ
+
+                HandleRandomSliderActivation();
             }
             else
             {
@@ -54,66 +68,76 @@ public class SliderController : MonoBehaviour
         {
             if (slider.value > 0)
             {
-                slider.value -= Time.deltaTime / duration;
-                // Slider´Â °¨¼Ò Áß¿¡µµ °è¼Ó ¼û°ÜÁø »óÅÂ À¯Áö
+                elapsedTime = Mathf.Max(0, elapsedTime - Time.deltaTime); // ê°ì†Œ
+                slider.value = Mathf.Clamp((elapsedTime / duration) * 100f, 0, 100f);
+                HideSlider(); // ê°ì†Œ ì¤‘ì—ëŠ” Slider ìˆ¨ê¹€
             }
             else
             {
-                StopDecreasing();
+                StopDecreasing(); // ìµœì†Œê°’ì— ë„ë‹¬í•˜ë©´ ê°ì†Œ ì •ì§€
             }
         }
     }
 
-    public void StartIncreasing()
-    {
-        if (isCompleted)
-        {
-            Debug.Log($"{gameObject.name} slider is already completed.");
-            return; // ¿Ï·áµÈ »óÅÂ¶ó¸é È°¼ºÈ­ ±İÁö
-        }
+    
+public void StartIncreasing()
+{
+    if (isCompleted || isIncreasing) return; // ì¤‘ë³µ ì‹¤í–‰ ë°©ì§€
 
-        isIncreasing = true;
-        isDecreasing = false;
-        elapsedTime = slider.value * duration; // ÁøÇà ÁßÀÎ »óÅÂ¿¡¼­ Àç°³
-        ShowSlider(); // Slider Ç¥½Ã
-        Debug.Log($"{gameObject.name} slider is now increasing.");
-    }
+    isIncreasing = true;
+    isDecreasing = false;
+    elapsedTime = (slider.value / 100f) * duration; // í˜„ì¬ valueì— ê¸°ë°˜í•œ ê²½ê³¼ ì‹œê°„ ê³„ì‚°
+    ResetRandomSliderTimer();
+}
 
     public void StartDecreasing()
     {
+        if (isCompleted) return;
+
+        isIncreasing = false;
+        isDecreasing = true;
+        HideSlider(); // ê°ì†Œ ì‹œì‘ ì‹œ Slider ìˆ¨ê¹€
+    }
+
+    public void StopDecreasing()
+    {
+        isDecreasing = false;
+        HideSlider(); // ê°ì†Œê°€ ëë‚œ í›„ì—ë„ Slider ìˆ¨ê¹€ ìœ ì§€
+    }
+
+    /// <summary>
+    /// ì§„í–‰ ì‹œê°„ì„ ê°ì†Œì‹œí‚µë‹ˆë‹¤.
+    /// </summary>
+    /// <param name="seconds">ê°ì†Œí•  ì‹œê°„ (ì´ˆ)</param>
+    public void DecreaseProgressBySeconds(float seconds)
+    {
         if (isCompleted)
         {
-            Debug.Log($"{gameObject.name} slider is already completed.");
-            return; // ¿Ï·áµÈ »óÅÂ¶ó¸é ºñÈ°¼ºÈ­ ±İÁö
+            Debug.LogWarning("ì´ë¯¸ ì™„ë£Œëœ Sliderì…ë‹ˆë‹¤.");
+            return;
         }
 
-        isDecreasing = true;
-        isIncreasing = false;
-        HideSlider(); // Slider ¼û±è
+        elapsedTime = Mathf.Max(0, elapsedTime - seconds); // 0 ì´í•˜ë¡œ ê°ì†Œí•˜ì§€ ì•Šë„ë¡ ì„¤ì •
+        slider.value = Mathf.Clamp((elapsedTime / duration) * 100f, 0, 100f); // Value ê°±ì‹ 
+        Debug.Log($"{gameObject.name} ì§„í–‰ ì‹œê°„ ê°ì†Œ: -{seconds}ì´ˆ");
     }
 
     private void CompleteSlider()
     {
         isIncreasing = false;
-        isCompleted = true; // ¿Ï·á »óÅÂ·Î ¼³Á¤
-        HideSlider(); // ¿Ï·á ½Ã Slider ¼û±è
+        isCompleted = true; // ì™„ë£Œ ìƒíƒœë¡œ ì„¤ì •
+        HideSlider(); // ì™„ë£Œ ì‹œ Slider ìˆ¨ê¹€
 
-        OnSliderCompleted?.Invoke(); // ¿Ï·á ÀÌº¥Æ® È£Ãâ
+        OnSliderCompleted?.Invoke(); // ì™„ë£Œ ì´ë²¤íŠ¸ í˜¸ì¶œ
         Debug.Log($"{gameObject.name} slider completed!");
-    }
-
-    private void StopDecreasing()
-    {
-        isDecreasing = false;
-        HideSlider(); // Slider ¼û±è
     }
 
     private void ShowSlider()
     {
         if (canvasGroup != null)
         {
-            canvasGroup.alpha = 1; // Slider Ç¥½Ã
-            canvasGroup.blocksRaycasts = true; // »óÈ£ÀÛ¿ë Çã¿ë
+            canvasGroup.alpha = 1; // Slider í‘œì‹œ
+            canvasGroup.blocksRaycasts = true; // ìƒí˜¸ì‘ìš© í—ˆìš©
         }
     }
 
@@ -121,13 +145,60 @@ public class SliderController : MonoBehaviour
     {
         if (canvasGroup != null)
         {
-            canvasGroup.alpha = 0; // Slider ¼û±è
-            canvasGroup.blocksRaycasts = false; // »óÈ£ÀÛ¿ë Â÷´Ü
+            canvasGroup.alpha = 0; // Slider ìˆ¨ê¹€
+            canvasGroup.blocksRaycasts = false; // ìƒí˜¸ì‘ìš© ì°¨ë‹¨
         }
     }
 
     public bool IsCompleted()
     {
-        return isCompleted; // isCompleted º¯¼ö °ª ¹İÈ¯
+        return isCompleted; // isCompleted ë³€ìˆ˜ ê°’ ë°˜í™˜
+    }
+
+    public bool IsIncreasing()
+    {
+        return isIncreasing; // í˜„ì¬ ì¦ê°€ ìƒíƒœ ë°˜í™˜
+    }
+
+    public bool IsDecreasing()
+    {
+        return isDecreasing; // í˜„ì¬ ê°ì†Œ ìƒíƒœ ë°˜í™˜
+    }
+
+    private void ResetRandomSliderTimer()
+    {
+        randomSliderDelay = Random.Range(6f, 12f); // 6~12ì´ˆ ëœë¤ ì‹œê°„
+        randomSliderTimer = 0f;
+    }
+
+    private void HandleRandomSliderActivation()
+    {
+        if (randomSlider == null || !isIncreasing) return;
+
+        randomSliderTimer += Time.deltaTime;
+
+        if (randomSliderTimer >= randomSliderDelay)
+        {
+            randomSlider.ActivateRandomSlider(); // RandomSlider í™œì„±í™”
+            ResetRandomSliderTimer(); // ë‹¤ìŒ RandomSlider ëŒ€ê¸° ì‹œê°„ ì´ˆê¸°í™”
+        }
+    }
+
+    public void PauseIncreasing()
+    {
+        if (isIncreasing)
+        {
+            isIncreasing = false; // ì¦ê°€ ìƒíƒœ ì¼ì‹œ ì •ì§€
+            Debug.Log($"{gameObject.name} ì¦ê°€ ì¼ì‹œ ì •ì§€");
+        }
+    }
+
+    public void ResumeIncreasing()
+    {
+        if (!isIncreasing && !isCompleted)
+        {
+            isIncreasing = true; // ì¦ê°€ ìƒíƒœ ì¬ê°œ
+            Debug.Log($"{gameObject.name} ì¦ê°€ ì¬ê°œ");
+        }
     }
 }

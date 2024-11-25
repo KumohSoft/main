@@ -8,34 +8,38 @@ public class SliderActivator : MonoBehaviour
     private bool isPlayerInTrigger = false; // 플레이어가 트리거 안에 있는지 확인
 
     void Start()
+{
+    if (statusTextObject != null)
     {
-        if (statusTextObject != null)
-        {
-            statusTextObject.SetActive(false); // 트리거 안내 메시지 초기 비활성화
-        }
-
-        if (completionTextObject != null)
-        {
-            completionTextObject.SetActive(false); // 완료 메시지 초기 비활성화
-        }
-
-        sliderController.OnSliderCompleted += OnSliderCompleted; // Slider 완료 이벤트 구독
+        statusTextObject.SetActive(false); // 트리거 안내 메시지 초기 비활성화
     }
 
-    void Update()
+    if (completionTextObject != null)
     {
-        if (isPlayerInTrigger && !sliderController.IsCompleted() && Input.GetKeyDown(KeyCode.E))
-        {
-            Debug.Log("E key pressed. Activating slider...");
-            sliderController.StartIncreasing();
-            UpdateTextVisibility();
-        }
-
-        if (sliderController != null && Input.anyKeyDown && IsCancelKeyPressed())
-        {
-            sliderController.StartDecreasing();
-        }
+        completionTextObject.SetActive(false); // 완료 메시지 초기 비활성화
     }
+
+    sliderController.OnSliderCompleted += OnSliderCompleted; // Slider 완료 이벤트 구독
+
+    // 슬라이더를 비활성화 상태로 시작
+    sliderController.StartDecreasing(); 
+}
+
+void Update()
+{
+    if (isPlayerInTrigger && !sliderController.IsCompleted() && Input.GetKeyDown(KeyCode.E))
+    {
+        Debug.Log("E key pressed. Activating slider...");
+        sliderController.StartIncreasing(); // E 키로 슬라이더 시작
+        UpdateTextVisibility();
+    }
+
+    if (sliderController != null && Input.anyKeyDown && IsCancelKeyPressed())
+    {
+        sliderController.StartDecreasing(); // 다른 키로 감소
+    }
+}
+
 
     private void OnTriggerEnter(Collider other)
     {
