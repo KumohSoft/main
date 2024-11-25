@@ -69,7 +69,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 63a66f690338e6341bc7256024d34364, type: 2}
     - target: {fileID: 919132149155446097, guid: f288a19d9a861a6488e01fcb8d557dbd, type: 3}
       propertyPath: m_Name
-      value: cheese
+      value: cheese 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f288a19d9a861a6488e01fcb8d557dbd, type: 3}
@@ -103,6 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8828606f8ff7074db83638d2d14b9fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sliderController: {fileID: 0}
-  statusTextObject: {fileID: 0}
-  completionTextObject: {fileID: 0}
+  sliderController: {fileID: 5471663776566624706, guid: 5b9bfe00efea00c4cbc32880ee0f2157, type: 3}
+  statusTextObject: {fileID: 8166835815797776146, guid: ad5c30ea559f87844a61ef526e2a3add, type: 3}
+  completionTextObject: {fileID: 8696851308885911171, guid: 1a580ea6fa2fa9747be27916d801ed6c, type: 3}

@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cheeseSliders:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  cheeseCounterText: {fileID: 0}
+  - {fileID: 5471663776566624706, guid: 5b9bfe00efea00c4cbc32880ee0f2157, type: 3}
+  - {fileID: 5471663776566624706, guid: 28ede1f7871e2d24c8f8e2a9e37066be, type: 3}
+  - {fileID: 5471663776566624706, guid: 2486c0652c353c541b0f36a2730eb307, type: 3}
+  - {fileID: 5471663776566624706, guid: 8d97efc68ac00c84ea75bec63561f893, type: 3}
+  - {fileID: 5471663776566624706, guid: 3622ff482dba8674e9a0c273f2e32366, type: 3}
+  cheeseCounterText: {fileID: 6891799057685468697, guid: bdd2214587249f441b5210c5c965c3f1, type: 3}
