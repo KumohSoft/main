@@ -130,6 +130,9 @@ namespace StarterAssets
         public TextMesh nickName;
         InGameNetworkManager inGameNetworkManager;
 
+        bool 치즈flag = false;
+        Chees temp;
+
         [Header("cat")]
         private int 쥐덫개수 = 3;
         private GameObject 쥐덫;
@@ -183,6 +186,32 @@ namespace StarterAssets
                 }
                 
             }
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            {
+                치즈flag = true;
+                temp = other.gameObject.GetComponent<Chees>();
+                //temp.게이지증가();
+            }
+
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            {
+
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            {
+                치즈flag = false;
+                temp = null;
+            }
+
+               
         }
 
         private void Awake()
@@ -360,6 +389,12 @@ namespace StarterAssets
                             SprintSpeed = 5.335f;
                         }
                     }
+                }
+
+                if(치즈flag&&temp!=null&& Input.GetKey(KeyCode.E))
+                {
+                    print("됨");
+                    temp.게이지증가();
                 }
             }
         }
@@ -760,6 +795,17 @@ namespace StarterAssets
                 쥐목숨 = (int)stream.ReceiveNext();
                 live = (bool)stream.ReceiveNext();
             }
+        }
+
+        public void 순간이동(Vector3 spawnPositioni)
+        {
+            photonView.RPC("순간이동RPC", RpcTarget.All, spawnPositioni);
+        }
+
+        [PunRPC]
+        private void 순간이동RPC(Vector3 spawnPositioni)
+        {
+            transform.position = spawnPositioni;
         }
 
     }

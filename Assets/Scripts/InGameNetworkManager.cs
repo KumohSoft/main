@@ -9,12 +9,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using StarterAssets;
 
 public class InGameNetworkManager : MonoBehaviourPunCallbacks
 {
     public GameObject[] Player;
     public Text Time;
     private GameObject Mycharactor;
+    public GameObject 대기바닥;
     public Text 치즈개수Text;
     private int 치즈개수 = 4;
     private int 쥐목숨 = 2;
@@ -44,11 +46,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter2 == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(3, 0, -0), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
+                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-45, 87, 1), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
             }
             else if (networkManager.Mycharacter2 == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(3, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 87, 1), Quaternion.identity);
             }
 
         }
@@ -56,12 +58,12 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-3, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-40, 87, 1), Quaternion.identity);
             }
 
             else if (networkManager.Mycharacter == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-3, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 87, 1), Quaternion.identity);
             }
         }
 
@@ -165,10 +167,9 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(1f);
         }
         Time.gameObject.SetActive(false);
-        for(int i=0; i<100; i++)
-        {
-            Mycharactor.transform.position = spawnPositioni;
-        }
+        대기바닥.SetActive(false);
+        ThirdPersonController temp = Mycharactor.GetComponent<ThirdPersonController>();
+        temp.순간이동(spawnPositioni);
         
         //print(spawnPositioni);
     }
