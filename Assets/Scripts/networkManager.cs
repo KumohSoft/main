@@ -113,7 +113,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         RoomName.text = PhotonNetwork.CurrentRoom.Name;
         if (PhotonNetwork.IsMasterClient)
         {
-            SetMynumRPC(PhotonNetwork.NickName,Mycharacter);
+            SetMynumRPC(PhotonNetwork.NickName,Mycharacter2+2);//마스터클라이언트는 고양이
 
             UpdateGameState(playerReady);
         }
@@ -183,20 +183,21 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        if(PlayPanel.activeSelf == true)
+        int roomCount = roomList.Count;
+        for (int i = 0; i < roomCount; i++)
         {
-            int roomCount = roomList.Count;
-            for (int i = 0; i < roomCount; i++)
+            if (!roomList[i].RemovedFromList)
             {
-                if (!roomList[i].RemovedFromList)
-                {
-                    if (!myList.Contains(roomList[i])) myList.Add(roomList[i]);
-                    else myList[myList.IndexOf(roomList[i])] = roomList[i];
-                }
-                else if (myList.IndexOf(roomList[i]) != -1) myList.RemoveAt(myList.IndexOf(roomList[i]));
+                if (!myList.Contains(roomList[i])) myList.Add(roomList[i]);
+                else myList[myList.IndexOf(roomList[i])] = roomList[i];
             }
-            MyListRenewal();
+            else if (myList.IndexOf(roomList[i]) != -1) myList.RemoveAt(myList.IndexOf(roomList[i]));
         }
+        MyListRenewal();
+        /*if (PlayPanel.activeSelf == true)
+        {
+            
+        }*/
         
     }
 
@@ -285,6 +286,7 @@ public class networkManager : MonoBehaviourPunCallbacks
                     sig = false;
                 }
             }
+           
 
             if (sig)
             {
@@ -357,12 +359,12 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void ClickPlayBTN()
     {
+        PlayPanel.SetActive(true);
         HomePanel.SetActive(false);
         상점Panel.SetActive(false);
         설정Panel.SetActive(false);
         내정보Panel.SetActive(false);
         Money.SetActive(false);
-        PlayPanel.SetActive(true);
         MyListRenewal();
     }
 
