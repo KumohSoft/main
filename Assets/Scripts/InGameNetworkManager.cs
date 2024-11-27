@@ -165,6 +165,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(1f);
         }
         Time.gameObject.SetActive(false);
-        Mycharactor.transform.position = spawnPositioni;
+        for(int i=0; i<100; i++)
+        {
+            Mycharactor.transform.position = spawnPositioni;
+        }
+        
+        //print(spawnPositioni);
     }
 }
