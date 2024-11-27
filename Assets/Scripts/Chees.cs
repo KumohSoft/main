@@ -11,6 +11,8 @@ public class Chees : MonoBehaviourPun, IPunObservable
     public Slider 발전기;
     float 게이지=0;
     bool flag=true;
+
+    bool 개인flag = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +37,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
             발전기TEXT.SetActive(true);
             발전기.gameObject.SetActive(true);
             발전기.value = 게이지;
+            개인flag = true;
         }
         print("더ㅚㅁ");
     }
@@ -55,6 +58,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
         {
             발전기TEXT.SetActive(false);
             발전기.gameObject.SetActive(false);
+            개인flag = false;
         }
         print("더ㅚㅁ");
     }
@@ -99,6 +103,15 @@ public class Chees : MonoBehaviourPun, IPunObservable
         else
         {
             게이지 = (float)stream.ReceiveNext();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if(개인flag)
+        {
+            발전기TEXT.SetActive(false);
+            발전기.gameObject.SetActive(false);
         }
     }
 }
