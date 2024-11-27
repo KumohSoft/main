@@ -131,12 +131,12 @@ public class firebaseLogin : MonoBehaviour
 
     public void SignUp()
     {
-        SignUpPanel.SetActive(true);
+        //SignUpPanel.SetActive(true);
     }
 
     public void Back()
     {
-        SignUpPanel.SetActive(false);
+        //SignUpPanel.SetActive(false);
     }
 
     bool sig = false;
