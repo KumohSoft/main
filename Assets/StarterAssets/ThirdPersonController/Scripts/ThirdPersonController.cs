@@ -316,7 +316,7 @@ namespace StarterAssets
                 {
                     PhotonNetwork.Instantiate("쥐덫1", 쥐덫생성position.transform.position, Quaternion.Euler(90, 0, 0));
                     쥐덫개수--;
-                    쥐덫개수text.text = 쥐덫개수.ToString();
+                    쥐덫개수text.text = "쥐덫개수:"+쥐덫개수.ToString();
                 }
                 if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
                 {
