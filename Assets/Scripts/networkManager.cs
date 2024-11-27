@@ -115,7 +115,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         {
             SetMynumRPC(PhotonNetwork.NickName,Mycharacter2+2);//마스터클라이언트는 고양이
 
-            UpdateGameState(playerReady);
+            UpdateGameState(playerReady, playercharint);
         }
         else
         {
@@ -131,7 +131,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>", newPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady);
+            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady, playercharint);
         }
     }
 
@@ -140,7 +140,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>", otherPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady);
+            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady, playercharint);
         }
     }
 
@@ -211,13 +211,18 @@ public class networkManager : MonoBehaviourPunCallbacks
                 playercharint[i] = num;
             }
         }
-        UpdateGameState(playerReady);
+        if(PhotonNetwork.IsMasterClient)
+        {
+            UpdateGameState(playerReady, playercharint);
+        }
+        
     }
 
     [PunRPC]
-    void UpdateGameState(bool[] playerReady2)//레디 상황과 선택한 캐릭터를 활성화 시키는 함수
+    void UpdateGameState(bool[] playerReady2, int[] playercharint2)//레디 상황과 선택한 캐릭터를 활성화 시키는 함수
     {
         playerReady = playerReady2;
+        playercharint = playercharint2;
         for (int i = 0; i < 4; i++)
         {
             if (i < PhotonNetwork.PlayerList.Length)
