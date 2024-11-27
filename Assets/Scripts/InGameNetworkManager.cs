@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class InGameNetworkManager : MonoBehaviourPunCallbacks
 {
     public GameObject[] Player;
+    public Text Time;
     private GameObject Mycharactor;
     public Text 치즈개수Text;
     private int 치즈개수 = 4;
@@ -43,11 +44,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter2 == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-0, 0, -0), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
+                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(3, 0, -0), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
             }
             else if (networkManager.Mycharacter2 == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-0, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(3, 0, -0), Quaternion.identity);
             }
 
         }
@@ -55,12 +56,12 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-0, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-3, 0, -0), Quaternion.identity);
             }
 
             else if (networkManager.Mycharacter == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-0, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-3, 0, -0), Quaternion.identity);
             }
         }
 
@@ -127,8 +128,8 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void GameStart(Vector3 spawnPositioni)
     {
-
-        Mycharactor.transform.position = spawnPositioni;
+        StartCoroutine(CountStart(spawnPositioni));
+        
     }
 
     [PunRPC]
@@ -154,5 +155,16 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                 break;
             }
         }
+    }
+
+    IEnumerator CountStart(Vector3 spawnPositioni)
+    {
+        for(int i=10; i>=0; i--)
+        {
+            Time.text = i.ToString();
+            yield return new WaitForSeconds(1f);
+        }
+        Time.gameObject.SetActive(false);
+        Mycharactor.transform.position = spawnPositioni;
     }
 }
