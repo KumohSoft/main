@@ -130,6 +130,8 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void GameStart(Vector3 spawnPositioni)
     {
+        Debug.Log($"spawnPositioni - X: {spawnPositioni.x}, Y: {spawnPositioni.y}, Z: {spawnPositioni.z}");
+
         StartCoroutine(CountStart(spawnPositioni));
         
     }
@@ -167,10 +169,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(1f);
         }
         Time.gameObject.SetActive(false);
-        대기바닥.SetActive(false);
+        //대기바닥.SetActive(false);
+        print("순간이동함");
         ThirdPersonController temp = Mycharactor.GetComponent<ThirdPersonController>();
         temp.순간이동(spawnPositioni);
         
-        //print(spawnPositioni);
+        
     }
 }

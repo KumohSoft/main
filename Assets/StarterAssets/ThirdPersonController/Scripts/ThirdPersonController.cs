@@ -126,12 +126,17 @@ namespace StarterAssets
         private int 쥐목숨 = 2;
         private bool 쥐맞음 = false;
         public bool live = true;
+        private bool 순간이동live = true;
 
         public TextMesh nickName;
         InGameNetworkManager inGameNetworkManager;
 
         bool 치즈flag = false;
         Chees temp;
+
+        private GameObject 살리기TEXT;
+        private Slider 발전기;
+        private GameObject 발전기Obejct;
 
         [Header("cat")]
         private int 쥐덫개수 = 3;
@@ -269,7 +274,10 @@ namespace StarterAssets
                 _fallTimeoutDelta = FallTimeout;
 
                 inGameNetworkManager = FindObjectOfType<InGameNetworkManager>();
-
+                살리기TEXT = GameObject.Find("발전기Image");
+                GameObject 발전기Obejct = GameObject.Find("게이지Slider");
+                발전기 = 발전기Obejct.GetComponent<Slider>();
+                발전기Obejct.SetActive(false);
                 //skillTimeObject = GameObject.Find("스킬");
                 if (networkManager.MySkill == 0 || gameObject.CompareTag("mouse"))
                 {
@@ -312,9 +320,13 @@ namespace StarterAssets
             if (photonView.IsMine)
             {
                 _hasAnimator = TryGetComponent(out _animator);
-                JumpAndGravity();
-                GroundedCheck();
-                Move();
+                if(순간이동live)
+                {
+                    JumpAndGravity();
+                    GroundedCheck();
+                    Move();
+                }
+                
                 if (live)//!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack")
                 {
                     
@@ -816,7 +828,17 @@ namespace StarterAssets
         {
             if(photonView.IsMine)
             {
-                transform.position = spawnPositioni;
+                순간이동live = false;
+                print("진짜이동함");
+                while (true)
+                {
+                    if (transform.position == spawnPositioni)
+                    {
+                        break;
+                    }
+                }
+                순간이동live = true;
+                
             }
         }
 
