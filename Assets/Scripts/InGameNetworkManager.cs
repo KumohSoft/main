@@ -174,6 +174,6 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         //대기바닥.SetActive(false);
         print("순간이동함");
         ThirdPersonController temp = Mycharactor.GetComponent<ThirdPersonController>();
-        temp.순간이동(spawnPositioni);
+        temp.순간이동(spawnPositioni,0);
     }
 }

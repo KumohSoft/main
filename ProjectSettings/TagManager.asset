@@ -9,6 +9,7 @@ TagManager:
   - cat
   - mouseTrap
   - cheese
+  - door
   layers:
   - Default
   - TransparentFX

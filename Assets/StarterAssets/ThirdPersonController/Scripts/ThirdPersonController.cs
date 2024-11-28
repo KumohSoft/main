@@ -134,6 +134,8 @@ namespace StarterAssets
 
         bool 치즈flag = false;
         Chees temp;
+        bool 문flag = false;
+        DoorOpen DoorOpenscript;
 
         private GameObject 살리기TEXT;
         private Slider 발전기;
@@ -199,6 +201,12 @@ namespace StarterAssets
                 //temp.게이지증가();
             }
 
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("door"))
+            {
+                문flag = true;
+                DoorOpenscript = other.gameObject.GetComponent<DoorOpen>();
+                //temp.게이지증가();
+            }
         }
 
         private void OnTriggerStay(Collider other)
@@ -215,6 +223,12 @@ namespace StarterAssets
             {
                 치즈flag = false;
                 temp = null;
+            }
+
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("door"))
+            {
+                문flag = false;
+                DoorOpenscript = null;
             }
 
 
@@ -409,6 +423,12 @@ namespace StarterAssets
                 {
                     print("됨");
                     temp.게이지증가();
+                }
+
+                if (문flag && DoorOpenscript != null && Input.GetKey(KeyCode.E))
+                {
+                    print("됨");
+                    DoorOpenscript.게이지증가();
                 }
             }
         }
@@ -673,6 +693,7 @@ namespace StarterAssets
             print("살아남");
             live = true;
             쥐목숨 = 2;
+            
             if (photonView.IsMine)
             {
                 _animator.SetTrigger("DieToMove");
@@ -792,15 +813,21 @@ namespace StarterAssets
                     }
                     live = false;
                     print(live);
+                    
                     if (photonView.IsMine)
                     {
                         inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
+                        Vector3 감옥position= new Vector3(-39, 4, -27);
+                        StartCoroutine(감옥GO(감옥position));
+
+                        //여기서 감옥으로 이동시킨다. 2초뒤에
+                        //그리고 다시 살린다??
                     }
                     //기절
+
+
                 }
                 print(쥐목숨);
-
-
             }
 
         }
@@ -820,13 +847,13 @@ namespace StarterAssets
             }
         }
 
-        public void 순간이동(Vector3 spawnPositioni)
+        public void 순간이동(Vector3 spawnPositioni,int num)
         {
-            photonView.RPC("순간이동RPC", RpcTarget.All, spawnPositioni);
+            photonView.RPC("순간이동RPC", RpcTarget.All, spawnPositioni,num);
         }
 
         [PunRPC]
-        private void 순간이동RPC(Vector3 spawnPositioni)
+        private void 순간이동RPC(Vector3 spawnPositioni, int num)
         {
             if (photonView.IsMine)
             {
@@ -834,12 +861,12 @@ namespace StarterAssets
                
                 print("진짜이동함");
                 transform.position = spawnPositioni;
-                StartCoroutine(순간이동코루틴(spawnPositioni));
+                StartCoroutine(순간이동코루틴(spawnPositioni, num));
 
             }
         }
 
-        IEnumerator 순간이동코루틴(Vector3 spawnPositioni)
+        IEnumerator 순간이동코루틴(Vector3 spawnPositioni, int num)
         {
             while(true)
             {
@@ -847,14 +874,25 @@ namespace StarterAssets
                 if (transform.position == spawnPositioni)
                 {
                     순간이동live = true;
+                    if(num==1)//num으로 확인을 해줘야 됨.......
+                    {
+                        살림();
+                    }
                     break;
                 }
                 else
                 {
                     transform.position = spawnPositioni;
-                }
-               
+                }               
             }
+        }
+
+        IEnumerator 감옥GO(Vector3 spawnPositioni)
+        {
+            yield return new WaitForSeconds(2f);
+            _animator.ResetTrigger("DieToMove");
+            살림();
+            순간이동(spawnPositioni,1);
             
         }
     }

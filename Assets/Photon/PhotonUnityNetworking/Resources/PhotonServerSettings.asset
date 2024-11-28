@@ -57,6 +57,7 @@ MonoBehaviour:
   - "\uC950\uBAA9\uC228UpdateRPC"
   - "\uC21C\uAC04\uC774\uB3D9RPC"
   - "\uAC8C\uC774\uC9C0\uC99D\uAC00RPC"
+  - OpenRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

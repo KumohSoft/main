@@ -1,11 +1,18 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-public class DoorOpen : MonoBehaviour
+using Photon.Pun;
+public class DoorOpen : MonoBehaviourPun, IPunObservable
 {
     public float moveSpeed = 2f; // Grid가 이동하는 속도
     public float targetYOffset = 50f; // 목표 y 좌표 상승량
     public Text messageText; // UI 텍스트 컴포넌트를 연결합니다.
+
+    public GameObject 발전기TEXT;
+    public Slider 발전기;
+    float 게이지 = 0;
+    public bool flag = true;
+    bool 개인flag = false;
 
     private Transform gridTransform;
 
@@ -23,10 +30,89 @@ public class DoorOpen : MonoBehaviour
         }
     }
 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("mouse") && flag)
+        {
+            PhotonView temp = other.gameObject.GetComponent<PhotonView>();
+            if (temp != null && temp.IsMine)
+            {
+                /*PhotonView photonView = gameObject.GetComponent<PhotonView>();
+                int viewID = photonView.ViewID;
+                photonView.RPC("치즈삭제", RpcTarget.MasterClient, viewID);*/
+                발전기TEXT.SetActive(true);
+                발전기.gameObject.SetActive(true);
+                발전기.value = 게이지;
+                개인flag = true;
+            }
+
+        }
+        print("더ㅚㅁ");
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("mouse") && flag)
+        {
+            PhotonView temp = other.gameObject.GetComponent<PhotonView>();
+            if (temp != null && temp.IsMine)
+            {
+                발전기.value = 게이지;
+            }
+        }
+    }
+
+
+    private void OnTriggerExit(Collider other)
+    {
+
+        if (other.CompareTag("mouse") && flag)
+        {
+            PhotonView temp = other.gameObject.GetComponent<PhotonView>();
+            if (temp != null && temp.IsMine)
+            {
+                발전기TEXT.SetActive(false);
+                발전기.gameObject.SetActive(false);
+                개인flag = false;
+            }
+
+        }
+        print("더ㅚㅁ");
+    }
+
+    public void 게이지증가()
+    {
+        photonView.RPC("게이지증가RPC", RpcTarget.MasterClient);
+        발전기.value = 게이지;
+        if (게이지 >= 발전기.maxValue)
+        {
+            발전기TEXT.SetActive(false);
+            발전기.gameObject.SetActive(false);
+            PhotonView photonView = gameObject.GetComponent<PhotonView>();
+            photonView.RPC("OpenRPC", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    public void 게이지증가RPC()
+    {
+        게이지 += Time.deltaTime * 9;
+    }
+    [PunRPC]
+    public void OpenRPC()
+    {
+        Open();
+    }
     public void Open()
     {
         ShowMessage("문이 열렸습니다!\n탈출하세요!");
         StartCoroutine(OpenDoorCoroutine());
+        if (개인flag)
+        {
+            발전기TEXT.SetActive(false);
+            발전기.gameObject.SetActive(false);
+        }
     }
 
     IEnumerator OpenDoorCoroutine()
@@ -61,5 +147,17 @@ public class DoorOpen : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         messageText.gameObject.SetActive(false);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(게이지);
+        }
+        else
+        {
+            게이지 = (float)stream.ReceiveNext();
+        }
     }
 }
