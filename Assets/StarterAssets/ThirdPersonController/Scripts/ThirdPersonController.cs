@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 using TMPro;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using System.Collections;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -126,9 +127,17 @@ namespace StarterAssets
         private int 쥐목숨 = 2;
         private bool 쥐맞음 = false;
         public bool live = true;
+        private bool 순간이동live = true;
 
         public TextMesh nickName;
         InGameNetworkManager inGameNetworkManager;
+
+        bool 치즈flag = false;
+        Chees temp;
+
+        private GameObject 살리기TEXT;
+        private Slider 발전기;
+        private GameObject 발전기Obejct;
 
         [Header("cat")]
         private int 쥐덫개수 = 3;
@@ -151,7 +160,7 @@ namespace StarterAssets
 
         private void OnCollisionEnter(Collision collision)
         {
-           
+
         }
         private void OnTriggerEnter(Collider other)
         {
@@ -170,24 +179,50 @@ namespace StarterAssets
             {
                 Debug.Log("충돌 발생: " + other.name);
                 ThirdPersonController temp = other.GetComponent<ThirdPersonController>();
-                if (temp != null&& temp!=parentScript)
+                if (temp != null && temp != parentScript)
                 {
                     print("널아님?");
                     print(temp.live);
-                   
+
                     if (temp.live == false)
                     {
                         print("살리긴함");
                         temp.살림();
                     }
                 }
-                
+
             }
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            {
+                치즈flag = true;
+                temp = other.gameObject.GetComponent<Chees>();
+                //temp.게이지증가();
+            }
+
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            {
+
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            {
+                치즈flag = false;
+                temp = null;
+            }
+
+
         }
 
         private void Awake()
         {
-            if(PhotonNetwork.IsMasterClient)//닉네임을 아군만 표시
+            if (PhotonNetwork.IsMasterClient)//닉네임을 아군만 표시
             {
                 if (gameObject.CompareTag("mouse"))
                 {
@@ -196,7 +231,7 @@ namespace StarterAssets
             }
             else
             {
-                if(gameObject.CompareTag("cat"))
+                if (gameObject.CompareTag("cat"))
                 {
                     nickName.gameObject.SetActive(false);
                 }
@@ -240,7 +275,10 @@ namespace StarterAssets
                 _fallTimeoutDelta = FallTimeout;
 
                 inGameNetworkManager = FindObjectOfType<InGameNetworkManager>();
-
+                살리기TEXT = GameObject.Find("발전기Image");
+                GameObject 발전기Obejct = GameObject.Find("게이지Slider");
+                발전기 = 발전기Obejct.GetComponent<Slider>();
+                발전기Obejct.SetActive(false);
                 //skillTimeObject = GameObject.Find("스킬");
                 if (networkManager.MySkill == 0 || gameObject.CompareTag("mouse"))
                 {
@@ -248,19 +286,19 @@ namespace StarterAssets
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트");
                     temp.SetActive(false);
-                    if(gameObject.CompareTag("mouse"))
+                    if (gameObject.CompareTag("mouse"))
                     {
                         쥐덫 = GameObject.Find("쥐덫");
                         쥐덫.SetActive(false);
                     }
-                            
+
                 }
-                if(gameObject.CompareTag("cat"))
+                if (gameObject.CompareTag("cat"))
                 {
                     쥐덫 = GameObject.Find("쥐덫");
                     쥐덫개수text = 쥐덫.GetComponentInChildren<Text>();
                 }
-                if (networkManager.MySkill == 1&&gameObject.CompareTag("cat"))
+                if (networkManager.MySkill == 1 && gameObject.CompareTag("cat"))
                 {
                     GameObject temp1 = GameObject.Find("헤이스트");
                     temp1.SetActive(false);
@@ -283,12 +321,16 @@ namespace StarterAssets
             if (photonView.IsMine)
             {
                 _hasAnimator = TryGetComponent(out _animator);
-
-                if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && live)
+                if (순간이동live)
                 {
                     JumpAndGravity();
                     GroundedCheck();
                     Move();
+                }
+
+                if (live)//!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack")
+                {
+
                 }
 
                 if (Input.GetMouseButtonDown(0) && !isAttacking && (gameObject.CompareTag("cat")))
@@ -312,11 +354,11 @@ namespace StarterAssets
                         SprintSpeed = 10;
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.T)&&gameObject.CompareTag("cat")&&쥐덫개수>0)
+                if (Input.GetKeyDown(KeyCode.T) && gameObject.CompareTag("cat") && 쥐덫개수 > 0)
                 {
                     PhotonNetwork.Instantiate("쥐덫1", 쥐덫생성position.transform.position, Quaternion.Euler(90, 0, 0));
                     쥐덫개수--;
-                    쥐덫개수text.text = 쥐덫개수.ToString();
+                    쥐덫개수text.text = "쥐덫개수:" + 쥐덫개수.ToString();
                 }
                 if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
                 {
@@ -345,7 +387,7 @@ namespace StarterAssets
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
                     공격받음();
-                        
+
                 }
                 if (쥐맞음)
                 {
@@ -360,6 +402,13 @@ namespace StarterAssets
                             SprintSpeed = 5.335f;
                         }
                     }
+                }
+
+                
+                if (치즈flag && temp != null && Input.GetKey(KeyCode.E))
+                {
+                    print("됨");
+                    temp.게이지증가();
                 }
             }
         }
@@ -419,70 +468,79 @@ namespace StarterAssets
 
         private void Move()
         {
-            // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
-            // a reference to the players current horizontal velocity
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
-            float speedOffset = 0.1f;
-            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-
-            // accelerate or decelerate to target speed
-            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
-                currentHorizontalSpeed > targetSpeed + speedOffset)
+            if (live)
             {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate);
+                // set target speed based on move speed, sprint speed and if sprint is pressed
+                float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
-                // round speed to 3 decimal places
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
+                // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+
+                // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+                // if there is no input, set the target speed to 0
+                if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+                // a reference to the players current horizontal velocity
+                float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+
+                float speedOffset = 0.1f;
+                float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+
+                // accelerate or decelerate to target speed
+                if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+                    currentHorizontalSpeed > targetSpeed + speedOffset)
+                {
+                    // creates curved result rather than a linear one giving a more organic speed change
+                    // note T in Lerp is clamped, so we don't need to clamp our speed
+                    _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                        Time.deltaTime * SpeedChangeRate);
+
+                    // round speed to 3 decimal places
+                    _speed = Mathf.Round(_speed * 1000f) / 1000f;
+                }
+                else
+                {
+                    _speed = targetSpeed;
+                }
+
+                _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+                if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+                // normalise input direction
+                Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+                // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+                // if there is a move input rotate player when the player is moving
+                if (_input.move != Vector2.zero)
+                {
+                    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                        _mainCamera.transform.eulerAngles.y;
+                    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                        RotationSmoothTime);
+
+                    // rotate to face input direction relative to camera position
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                }
+                // update animator if using character
+                if (_hasAnimator)
+                {
+                    _animator.SetFloat(_animIDSpeed, _animationBlend);
+                    _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                }
             }
-            else
-            {
-                _speed = targetSpeed;
-            }
 
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-            // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
-            {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                    _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
-
-                // rotate to face input direction relative to camera position
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-            }
 
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            if (!live)
+            {
+                targetDirection = Vector3.zero;
+            }
 
             // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-            }
+
         }
 
         private void JumpAndGravity()
@@ -506,7 +564,7 @@ namespace StarterAssets
                 }
 
                 // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                if (_input.jump && _jumpTimeoutDelta <= 0.0f && live)//살아있다면 점프가능
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -600,7 +658,7 @@ namespace StarterAssets
                 }
             }
         }
-            
+
 
 
 
@@ -621,7 +679,7 @@ namespace StarterAssets
                 inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
             }
         }
-        
+
         public void OnAttackEnd()
         {
             print("실행딤");
@@ -711,7 +769,7 @@ namespace StarterAssets
         [PunRPC]
         void 공격받음RPC()//이 코드 반응속도 때문에 수정필요할듯
         {
-            if(!쥐맞음)
+            if (!쥐맞음)
             {
                 쥐목숨--;
                 if (쥐목숨 == 1)
@@ -727,7 +785,7 @@ namespace StarterAssets
                 }
                 if (쥐목숨 == 0)//왜 따로 if문을 사용?? 흠
                 {
-                    if(photonView.IsMine)
+                    if (photonView.IsMine)
                     {
                         _animator.ResetTrigger("DieToMove");
                         _animator.SetTrigger("MoveToDie");
@@ -741,8 +799,8 @@ namespace StarterAssets
                     //기절
                 }
                 print(쥐목숨);
-                
-                
+
+
             }
 
         }
@@ -762,5 +820,42 @@ namespace StarterAssets
             }
         }
 
+        public void 순간이동(Vector3 spawnPositioni)
+        {
+            photonView.RPC("순간이동RPC", RpcTarget.All, spawnPositioni);
+        }
+
+        [PunRPC]
+        private void 순간이동RPC(Vector3 spawnPositioni)
+        {
+            if (photonView.IsMine)
+            {
+                순간이동live = false;
+               
+                print("진짜이동함");
+                transform.position = spawnPositioni;
+                StartCoroutine(순간이동코루틴(spawnPositioni));
+
+            }
+        }
+
+        IEnumerator 순간이동코루틴(Vector3 spawnPositioni)
+        {
+            while(true)
+            {
+                yield return new WaitForSeconds(0.5f);
+                if (transform.position == spawnPositioni)
+                {
+                    순간이동live = true;
+                    break;
+                }
+                else
+                {
+                    transform.position = spawnPositioni;
+                }
+               
+            }
+            
+        }
     }
 }

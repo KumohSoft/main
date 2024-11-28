@@ -25,7 +25,10 @@ public class NameTag : MonoBehaviourPunCallbacks
     [PunRPC]
     void SetNickName(string name)
     {
-        textMesh.text = name;
+        if(textMesh!=null)
+        {
+            textMesh.text = name;
+        }
     }
 
     private void Update()

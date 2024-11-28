@@ -9,12 +9,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using StarterAssets;
 
 public class InGameNetworkManager : MonoBehaviourPunCallbacks
 {
     public GameObject[] Player;
+    public Text Time;
     private GameObject Mycharactor;
+    public GameObject 대기바닥;
     public Text 치즈개수Text;
+    public DoorOpen DoorOpenscript;
     private int 치즈개수 = 4;
     private int 쥐목숨 = 2;
     private int count = 0;
@@ -43,11 +47,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter2 == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-0, 0, -0), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
+                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-45, 87, 1), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
             }
             else if (networkManager.Mycharacter2 == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-0, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 87, 1), Quaternion.identity);
             }
 
         }
@@ -55,12 +59,12 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-0, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-40, 87, 1), Quaternion.identity);
             }
 
             else if (networkManager.Mycharacter == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-0, 0, -0), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 87, 1), Quaternion.identity);
             }
         }
 
@@ -90,6 +94,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         치즈개수Text.text = "치즈개수:" + 치즈개수.ToString();
         if (치즈개수 == 0)
         {
+            DoorOpenscript.Open();
             //문을 열수있는 로직;
         }
     }
@@ -127,8 +132,10 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void GameStart(Vector3 spawnPositioni)
     {
+        Debug.Log($"spawnPositioni - X: {spawnPositioni.x}, Y: {spawnPositioni.y}, Z: {spawnPositioni.z}");
 
-        Mycharactor.transform.position = spawnPositioni;
+        StartCoroutine(CountStart(spawnPositioni));
+        
     }
 
     [PunRPC]
@@ -154,5 +161,19 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                 break;
             }
         }
+    }
+
+    IEnumerator CountStart(Vector3 spawnPositioni)
+    {
+        for(int i=10; i>=0; i--)
+        {
+            Time.text = i.ToString();
+            yield return new WaitForSeconds(1f);
+        }
+        Time.gameObject.SetActive(false);
+        //대기바닥.SetActive(false);
+        print("순간이동함");
+        ThirdPersonController temp = Mycharactor.GetComponent<ThirdPersonController>();
+        temp.순간이동(spawnPositioni);
     }
 }
