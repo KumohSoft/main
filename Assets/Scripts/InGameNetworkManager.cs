@@ -18,6 +18,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     private GameObject Mycharactor;
     public GameObject 대기바닥;
     public Text 치즈개수Text;
+    public DoorOpen DoorOpenscript;
     private int 치즈개수 = 4;
     private int 쥐목숨 = 2;
     private int count = 0;
@@ -93,6 +94,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         치즈개수Text.text = "치즈개수:" + 치즈개수.ToString();
         if (치즈개수 == 0)
         {
+            DoorOpenscript.Open();
             //문을 열수있는 로직;
         }
     }
@@ -173,7 +175,5 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         print("순간이동함");
         ThirdPersonController temp = Mycharactor.GetComponent<ThirdPersonController>();
         temp.순간이동(spawnPositioni);
-        
-        
     }
 }

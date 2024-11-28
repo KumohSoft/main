@@ -15,7 +15,7 @@ public class DoorOpen : MonoBehaviour
         gridTransform = transform.Find("Grid");
         if (gridTransform != null)
         {
-            Open();
+            //Open();
         }
         else
         {
@@ -23,7 +23,7 @@ public class DoorOpen : MonoBehaviour
         }
     }
 
-    void Open()
+    public void Open()
     {
         ShowMessage("문이 열렸습니다!\n탈출하세요!");
         StartCoroutine(OpenDoorCoroutine());

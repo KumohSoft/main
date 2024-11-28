@@ -5178,6 +5178,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: sir (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
+      propertyPath: m_TagString
+      value: cheese
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
 --- !u!1 &277619233 stripped
@@ -6374,6 +6378,7 @@ MonoBehaviour:
   Time: {fileID: 415982379}
   "\uB300\uAE30\uBC14\uB2E5": {fileID: 178012821}
   "\uCE58\uC988\uAC1C\uC218Text": {fileID: 1830256412}
+  DoorOpenscript: {fileID: 7884732334318055909}
 --- !u!4 &362705984
 Transform:
   m_ObjectHideFlags: 0
@@ -8006,6 +8011,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
       propertyPath: m_Name
       value: sir
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
+      propertyPath: m_TagString
+      value: cheese
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
@@ -27058,6 +27067,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: sir (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
+      propertyPath: m_TagString
+      value: cheese
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
 --- !u!1 &1707935010 stripped
@@ -30171,6 +30184,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: sir (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
+      propertyPath: m_TagString
+      value: cheese
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
 --- !u!1 &1915695416 stripped
@@ -30978,6 +30995,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
       propertyPath: m_Name
       value: sir (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
+      propertyPath: m_TagString
+      value: cheese
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d90fd45710d1bf148a207ba262f22722, type: 3}
