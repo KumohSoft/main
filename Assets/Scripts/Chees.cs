@@ -28,37 +28,50 @@ public class Chees : MonoBehaviourPun, IPunObservable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("mouse")&&flag&& other.gameObject.GetComponent<PhotonView>().IsMine)
+        if (other.CompareTag("mouse")&&flag)
         {
-
-            /*PhotonView photonView = gameObject.GetComponent<PhotonView>();
-            int viewID = photonView.ViewID;
-            photonView.RPC("치즈삭제", RpcTarget.MasterClient, viewID);*/
-            발전기TEXT.SetActive(true);
-            발전기.gameObject.SetActive(true);
-            발전기.value = 게이지;
-            개인flag = true;
+            PhotonView temp = other.gameObject.GetComponent<PhotonView>();
+            if(temp.IsMine)
+            {
+                /*PhotonView photonView = gameObject.GetComponent<PhotonView>();
+                int viewID = photonView.ViewID;
+                photonView.RPC("치즈삭제", RpcTarget.MasterClient, viewID);*/
+                발전기TEXT.SetActive(true);
+                발전기.gameObject.SetActive(true);
+                발전기.value = 게이지;
+                개인flag = true;
+            }
+            
         }
         print("더ㅚㅁ");
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("mouse") && flag && other.gameObject.GetComponent<PhotonView>().IsMine)
+        if (other.CompareTag("mouse") && flag)
         {
-            발전기.value = 게이지;
-
+            PhotonView temp = other.gameObject.GetComponent<PhotonView>();
+            if (temp.IsMine)
+            {
+                발전기.value = 게이지;
+            }
         }
     }
 
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("mouse") && flag && other.gameObject.GetComponent<PhotonView>().IsMine)
+
+        if (other.CompareTag("mouse") && flag)
         {
-            발전기TEXT.SetActive(false);
-            발전기.gameObject.SetActive(false);
-            개인flag = false;
+            PhotonView temp = other.gameObject.GetComponent<PhotonView>();
+            if (temp.IsMine)
+            {
+                발전기TEXT.SetActive(false);
+                발전기.gameObject.SetActive(false);
+                개인flag = false;
+            }
+                
         }
         print("더ㅚㅁ");
     }

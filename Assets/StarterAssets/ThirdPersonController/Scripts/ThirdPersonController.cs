@@ -814,7 +814,10 @@ namespace StarterAssets
         [PunRPC]
         private void 순간이동RPC(Vector3 spawnPositioni)
         {
-            transform.position = spawnPositioni;
+            if(photonView.IsMine)
+            {
+                transform.position = spawnPositioni;
+            }
         }
 
     }
