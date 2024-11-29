@@ -102,12 +102,24 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void OpenRPC()
     {
-        Open();
+        Open2();
     }
     public void Open()
     {
         ShowMessage("문이 열렸습니다!\n탈출하세요!");
         StartCoroutine(OpenDoorCoroutine());
+        if (개인flag)
+        {
+            발전기TEXT.SetActive(false);
+            발전기.gameObject.SetActive(false);
+        }
+    }
+
+    public void Open2()
+    {
+        ShowMessage("문이 열렸습니다!\n탈출하세요!");
+        게이지 = 0;
+        StartCoroutine(OpenDoorCoroutine2());
         if (개인flag)
         {
             발전기TEXT.SetActive(false);
@@ -131,6 +143,37 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
             yield return null; // 다음 프레임까지 대기
         }
     }
+
+    IEnumerator OpenDoorCoroutine2()
+    {
+        float initialY = gridTransform.localPosition.y;
+        float targetY = initialY + targetYOffset;
+
+        // 1. y 좌표를 천천히 상승
+        while (gridTransform.localPosition.y < targetY)
+        {
+            Vector3 newPosition = gridTransform.localPosition;
+            newPosition.y += moveSpeed * Time.deltaTime;
+            newPosition.y = Mathf.Min(newPosition.y, targetY); // 목표 좌표를 초과하지 않도록 제한
+            gridTransform.localPosition = newPosition;
+
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        yield return new WaitForSeconds(5f);
+
+        // 2. y 좌표를 천천히 하강
+        while (gridTransform.localPosition.y > initialY)
+        {
+            Vector3 newPosition = gridTransform.localPosition;
+            newPosition.y -= moveSpeed * Time.deltaTime;
+            newPosition.y = Mathf.Max(newPosition.y, initialY); // 시작 좌표를 아래로 초과하지 않도록 제한
+            gridTransform.localPosition = newPosition;
+
+            yield return null; // 다음 프레임까지 대기
+        }
+    }
+
     void ShowMessage(string message)
     {
         if (messageText != null)

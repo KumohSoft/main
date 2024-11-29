@@ -126,12 +126,41 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void JoinLobby() => PhotonNetwork.JoinLobby();
 
+    public void LeftRoom()
+    {
+        photonView.RPC("ReSetMynumRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.NickName);
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        
+        for (int i = 0; i < 4; i++)//방을 떠나면서 방 정보 초기화
+        {
+            playerBtn[i].interactable = false;
+            PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
+            playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
+            playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            ChatText[i].text = " ";
+        }
+        LobbyPanel.SetActive(true);
+        MakeRoomPanel.SetActive(false);
+        ClickPlayBTN();
+        RoomPanel.SetActive(false);
+        
+        PhotonNetwork.JoinLobby();
+        
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>", newPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
         }
     }
 
@@ -140,7 +169,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>", otherPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
         }
     }
 
@@ -152,6 +181,19 @@ public class networkManager : MonoBehaviourPunCallbacks
         StopCoroutine(loadingTextCoroutine);//코루틴 중단
         NickName.text = PhotonNetwork.LocalPlayer.NickName+"님";//닉네임 text를 로컬 플레이어 닉네임으로 설정
         print(PhotonNetwork.LocalPlayer.NickName);
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            HandleNewMasterClient();
+        }
+
+        void HandleNewMasterClient()
+        {
+            SetMynumRPC(PhotonNetwork.NickName, Mycharacter2 + 2);
+        }
     }
 
     public void MyListClick(int num)
@@ -202,6 +244,29 @@ public class networkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
+    void ReSetMynumRPC(string name)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i < PhotonNetwork.PlayerList.Length && PhotonNetwork.PlayerList[i].NickName == name)
+            {
+                playercharint[i] = 0;
+                for (int j = i; j < PhotonNetwork.PlayerList.Length; j++)
+                {
+                    playerReady[j] = playerReady[j + 1];
+                    playercharint[j] = playercharint[j + 1];
+                }
+            }
+            
+        }
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
+        }
+
+    }
+
+    [PunRPC]
     void SetMynumRPC(string name, int num)
     {
         for (int i = 0; i < 4; i++)
@@ -213,7 +278,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         }
         if(PhotonNetwork.IsMasterClient)
         {
-            UpdateGameState(playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
         }
         
     }
@@ -247,6 +312,7 @@ public class networkManager : MonoBehaviourPunCallbacks
             else
             {
                 playerBtn[i].interactable = false;
+                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
             }
