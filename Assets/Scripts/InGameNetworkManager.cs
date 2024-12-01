@@ -19,7 +19,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     public GameObject 대기바닥;
     public Text 치즈개수Text;
     public DoorOpen DoorOpenscript;
-    private int 치즈개수 = 4;
+    private int 치즈개수 = 10;
     private int 쥐목숨 = 2;
     private int count = 0;
     private List<Vector3> spawnPositions = new List<Vector3> {
@@ -95,6 +95,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         if (치즈개수 == 0)
         {
             DoorOpenscript.Open();
+            SceneManager.LoadScene("LobbyScene");
             //문을 열수있는 로직;
         }
     }

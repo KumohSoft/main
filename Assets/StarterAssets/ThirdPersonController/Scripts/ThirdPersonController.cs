@@ -6,6 +6,7 @@ using TMPro;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.SceneManagement;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -402,6 +403,11 @@ namespace StarterAssets
                 {
                     공격받음();
 
+                }
+
+                if (Input.GetKeyDown(KeyCode.K))
+                {
+                    SceneManager.LoadScene("LobbyScene");
                 }
                 if (쥐맞음)
                 {

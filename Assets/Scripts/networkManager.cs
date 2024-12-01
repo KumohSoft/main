@@ -311,6 +311,8 @@ public class networkManager : MonoBehaviourPunCallbacks
         count.text = "0";
 
         SceneManager.LoadScene("Game Scene");
+        count.gameObject.SetActive(false);
+        RoomPanel.SetActive(false);
     }
 
     IEnumerator UpdateLoadingText(Text temp, string S)
