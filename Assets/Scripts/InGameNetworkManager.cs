@@ -19,6 +19,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     public GameObject 대기바닥;
     public Text 치즈개수Text;
     public DoorOpen DoorOpenscript;
+    public GameObject Lobby캔버스;
     private int 치즈개수 = 10;
     private int 쥐목숨 = 2;
     private int count = 0;
@@ -69,17 +70,32 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         }
 
 
-        photonView.RPC("LoadComplete", RpcTarget.MasterClient);
         치즈개수Text.text = "치즈개수:" + 치즈개수.ToString();
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(photonView.IsMine && gameObject.CompareTag("mouse") && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("GameOverRPC", RpcTarget.MasterClient);
+        }
+    }
+
     void Start()
     {
-
+        
     }
 
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            /*Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            networkManager.Lobby캔버스.SetActive(true);
+            SceneManager.LoadScene("LobbyScene");*/
+            photonView.RPC("GameOverRPC", RpcTarget.MasterClient);
+        }
     }
 
 
@@ -95,7 +111,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         if (치즈개수 == 0)
         {
             DoorOpenscript.Open();
-            SceneManager.LoadScene("LobbyScene");
+            //SceneManager.LoadScene("LobbyScene");
             //문을 열수있는 로직;
         }
     }
@@ -176,5 +192,33 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         print("순간이동함");
         ThirdPersonController temp = Mycharactor.GetComponent<ThirdPersonController>();
         temp.순간이동(spawnPositioni,0);
+    }
+
+    [PunRPC]
+    void GameOverRPC()
+    {
+        photonView.RPC("GameOver", RpcTarget.All);
+    }
+
+    public void GameOver()
+    {
+        StartCoroutine(GameOver코루틴());
+    }
+
+
+    IEnumerator GameOver코루틴()
+    {
+        Time.gameObject.SetActive(true);
+        for (int i = 10; i >= 0; i--)
+        {
+            Time.text = "Game Over"+"\n"+i.ToString()+"초 후 로비로 돌아갑니다.";
+            yield return new WaitForSeconds(1f);
+        }
+        Time.gameObject.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        networkManager.Lobby캔버스.SetActive(true);
+        SceneManager.LoadScene("LobbyScene");
     }
 }

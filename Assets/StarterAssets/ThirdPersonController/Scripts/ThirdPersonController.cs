@@ -406,10 +406,7 @@ namespace StarterAssets
 
                 }
 
-                if (Input.GetKeyDown(KeyCode.K))
-                {
-                    SceneManager.LoadScene("LobbyScene");
-                }
+                
                 if (쥐맞음)
                 {
                     if (skillTime > 0)

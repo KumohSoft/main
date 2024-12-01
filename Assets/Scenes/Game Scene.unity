@@ -6828,6 +6828,7 @@ GameObject:
   - component: {fileID: 362705983}
   - component: {fileID: 362705985}
   - component: {fileID: 362705986}
+  - component: {fileID: 362705987}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6855,6 +6856,7 @@ MonoBehaviour:
   "\uB300\uAE30\uBC14\uB2E5": {fileID: 178012821}
   "\uCE58\uC988\uAC1C\uC218Text": {fileID: 1830256412}
   DoorOpenscript: {fileID: 7884732334318055909}
+  "Lobby\uCE94\uBC84\uC2A4": {fileID: 0}
 --- !u!4 &362705984
 Transform:
   m_ObjectHideFlags: 0
@@ -6863,7 +6865,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 362705982}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.99, y: 0, z: 0}
+  m_LocalPosition: {x: -43.9, y: 1.83, z: -39.14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6988,6 +6990,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &362705987
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362705982}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 9.421761, y: 6.8968034, z: 0.90218735}
+  m_Center: {x: -2.1601334, y: -2.9484017, z: 3.9410992}
 --- !u!1 &376611715 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6139523223018576374, guid: 4c1e9b8c73032144b8995ed84ea898d7, type: 3}
@@ -7303,15 +7318,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 1
     m_MaxSize: 100
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: '10
-
-'
+  m_Text: "Game Over\n5\uCD08 \uD6C4 \uB85C\uBE44\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4."
 --- !u!222 &415982380
 CanvasRenderer:
   m_ObjectHideFlags: 0

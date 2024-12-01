@@ -2,9 +2,8 @@ using UnityEngine;
 
 public class DontDestroy : MonoBehaviour
 {
-    private static DontDestroy instance;
+    public static DontDestroy instance;
     public GameObject GameManager;
-    public GameObject RoomPaenl;
 
     void Awake()
     {
@@ -16,7 +15,6 @@ public class DontDestroy : MonoBehaviour
         }
         else
         {
-            RoomPaenl.SetActive(true);
             Destroy(gameObject);
         }
     }

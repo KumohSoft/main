@@ -59,6 +59,7 @@ MonoBehaviour:
   - "\uAC8C\uC774\uC9C0\uC99D\uAC00RPC"
   - OpenRPC
   - ReSetMynumRPC
+  - GameOverRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

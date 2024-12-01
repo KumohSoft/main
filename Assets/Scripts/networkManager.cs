@@ -24,12 +24,14 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject LoginPanel;
     public GameObject LobbyPanel;
     public GameObject RoomPanel;
+    public static GameObject RoomPanel2;
 
     public GameObject 로그인중;
     public Text 로그인중text;
     private Coroutine loadingTextCoroutine;
 
     [Header("LobbyPanel")]
+    public static GameObject Lobby캔버스;
     public InputField RoomInput;
     public Button[] CellBtn;
     public Button PreviousBtn;
@@ -78,7 +80,8 @@ public class networkManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        
+        Lobby캔버스= GameObject.Find("LobbyCanvas");
+        RoomPanel2 = RoomPanel;
     }
 
     // Update is called once per frame
@@ -368,17 +371,35 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     IEnumerator GameStart()
     {
-        count.text = "3";
+        count.gameObject.SetActive(true);
+        count.GetComponent<UnityEngine.UI.Text>().text = "3";
         yield return new WaitForSeconds(1f);
-        count.text = "2";
+        count.GetComponent<UnityEngine.UI.Text>().text = "2";
         yield return new WaitForSeconds(1f);
-        count.text = "1";
+        count.GetComponent<UnityEngine.UI.Text>().text = "1";
         yield return new WaitForSeconds(1f);
-        count.text = "0";
+        count.GetComponent<UnityEngine.UI.Text>().text = "0";
 
+        // 씬 로드 시작
+        SceneManager.sceneLoaded += OnSceneLoaded; // 씬 로드 이벤트 등록
         SceneManager.LoadScene("Game Scene");
-        count.gameObject.SetActive(false);
-        RoomPanel.SetActive(false);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Game Scene이 로드되었을 때 실행
+        if (scene.name == "Game Scene")
+        {
+            for(int i=0; i<4; i++)
+            {
+                playerReady[i] = false;
+                playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
+            }
+            Lobby캔버스.SetActive(false); // Lobby Canvas 비활성화
+            count.gameObject.SetActive(false); // 카운트다운 텍스트 비활성화
+
+            SceneManager.sceneLoaded -= OnSceneLoaded; // 이벤트 해제
+        }
     }
 
     IEnumerator UpdateLoadingText(Text temp, string S)
