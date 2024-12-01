@@ -270,6 +270,7 @@ namespace StarterAssets
 
         private void Start()
         {
+            _hasAnimator = TryGetComponent(out _animator);
             if (photonView.IsMine)
             {
                 _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -699,10 +700,10 @@ namespace StarterAssets
             print("살아남");
             live = true;
             쥐목숨 = 2;
-            
+
+            _animator.SetTrigger("DieToMove");
             if (photonView.IsMine)
             {
-                _animator.SetTrigger("DieToMove");
                 inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
             }
         }
@@ -790,7 +791,14 @@ namespace StarterAssets
 
         public void 공격받음()
         {
-            photonView.RPC("공격받음RPC", RpcTarget.All);
+            
+            if (!쥐맞음)
+            {
+                print("여러번");
+                photonView.RPC("공격받음RPC", RpcTarget.All);
+                쥐맞음 = true;
+            }
+                
         }
 
         [PunRPC]
@@ -812,6 +820,7 @@ namespace StarterAssets
                 }
                 if (쥐목숨 == 0)//왜 따로 if문을 사용?? 흠
                 {
+                    
                     if (photonView.IsMine)
                     {
                         _animator.ResetTrigger("DieToMove");
@@ -882,7 +891,7 @@ namespace StarterAssets
                     순간이동live = true;
                     if(num==1)//num으로 확인을 해줘야 됨.......
                     {
-                        살림();
+                        //살림();
                     }
                     break;
                 }

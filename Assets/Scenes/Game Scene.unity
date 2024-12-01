@@ -1552,7 +1552,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1
-  targetYOffset: 2.2
+  targetYOffset: 1
   messageText: {fileID: 1647123495}
   "\uBC1C\uC804\uAE30TEXT": {fileID: 78003772}
   "\uBC1C\uC804\uAE30": {fileID: 1920830507}
