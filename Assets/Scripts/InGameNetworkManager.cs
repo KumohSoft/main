@@ -23,6 +23,8 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     private int 치즈개수 = 10;
     private int 쥐목숨 = 2;
     private int count = 0;
+
+    int 사망수 = 0;
     private List<Vector3> spawnPositions = new List<Vector3> {
         new Vector3(-44.56f, 6.227f, -18.27f),
         new Vector3(-57.4f, 6.227f, -18.27f),
@@ -69,7 +71,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             }
         }
 
-
+        photonView.RPC("LoadComplete", RpcTarget.MasterClient);
         치즈개수Text.text = "치즈개수:" + 치즈개수.ToString();
     }
 
@@ -77,7 +79,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     {
         if(photonView.IsMine && gameObject.CompareTag("mouse") && PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("GameOverRPC", RpcTarget.MasterClient);
+            photonView.RPC("GameOverRPC", RpcTarget.All,1);
         }
     }
 
@@ -94,7 +96,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             Cursor.visible = true;
             networkManager.Lobby캔버스.SetActive(true);
             SceneManager.LoadScene("LobbyScene");*/
-            photonView.RPC("GameOverRPC", RpcTarget.MasterClient);
+            photonView.RPC("GameOverRPC", RpcTarget.All,1);
         }
     }
 
@@ -195,18 +197,13 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void GameOverRPC()
+    public void GameOverRPC(int num)
     {
-        photonView.RPC("GameOver", RpcTarget.All);
-    }
-
-    public void GameOver()
-    {
-        StartCoroutine(GameOver코루틴());
+        StartCoroutine(GameOver코루틴(num));
     }
 
 
-    IEnumerator GameOver코루틴()
+    IEnumerator GameOver코루틴(int num)
     {
         Time.gameObject.SetActive(true);
         for (int i = 10; i >= 0; i--)
@@ -220,5 +217,30 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         Cursor.visible = true;
         networkManager.Lobby캔버스.SetActive(true);
         SceneManager.LoadScene("LobbyScene");
+    }
+
+    public void 사망수UP()
+    {
+        photonView.RPC("사망수UPRPC", RpcTarget.All);
+    }
+
+    [PunRPC]
+    void 사망수UPRPC()
+    {
+        사망수++;
+        if (photonView.IsMine && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+        {
+            photonView.RPC("GameOverRPC", RpcTarget.All);
+        }
+    }
+
+    public void 탈출()
+    {
+        photonView.RPC("탈출RPC", RpcTarget.All);
+    }
+
+    public void 탈출RPC()
+    {
+        사망수=0;
     }
 }

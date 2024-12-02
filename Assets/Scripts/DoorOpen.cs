@@ -15,6 +15,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     bool 개인flag = false;
 
     private Transform gridTransform;
+    InGameNetworkManager inGameNetworkManager;
 
     private void Start()
     {
@@ -28,6 +29,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
         {
             Debug.LogError("Grid child not found!");
         }
+        inGameNetworkManager = FindObjectOfType<InGameNetworkManager>();
     }
 
 
@@ -125,6 +127,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
             발전기TEXT.SetActive(false);
             발전기.gameObject.SetActive(false);
         }
+        inGameNetworkManager.
     }
 
     IEnumerator OpenDoorCoroutine()

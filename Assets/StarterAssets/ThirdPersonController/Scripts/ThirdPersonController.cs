@@ -831,6 +831,7 @@ namespace StarterAssets
                         inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
                         Vector3 감옥position= new Vector3(-39, 4, -27);
                         StartCoroutine(감옥GO(감옥position));
+                        inGameNetworkManager.사망수UP();
 
                         //여기서 감옥으로 이동시킨다. 2초뒤에
                         //그리고 다시 살린다??
