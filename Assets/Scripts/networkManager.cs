@@ -59,7 +59,12 @@ public class networkManager : MonoBehaviourPunCallbacks
     [Header("RoomPanel")]
     public Text PlayerName;
     public Text RoomName;
-    public Text count;
+
+    /* 수정 부분 */
+    public Image countImage;
+    public Image startImage;
+    public Sprite[] numberSprites;
+
     public Button[] playerBtn;
     public GameObject[] playerchar;
     public GameObject character;
@@ -371,14 +376,23 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     IEnumerator GameStart()
     {
-        count.gameObject.SetActive(true);
-        count.GetComponent<UnityEngine.UI.Text>().text = "3";
+        countImage.gameObject.SetActive(true);
+        startImage.gameObject.SetActive(false);
+
+        countImage.sprite = numberSprites[3];
         yield return new WaitForSeconds(1f);
-        count.GetComponent<UnityEngine.UI.Text>().text = "2";
+
+        countImage.sprite = numberSprites[2];
         yield return new WaitForSeconds(1f);
-        count.GetComponent<UnityEngine.UI.Text>().text = "1";
+
+        countImage.sprite = numberSprites[1];
         yield return new WaitForSeconds(1f);
-        count.GetComponent<UnityEngine.UI.Text>().text = "0";
+
+        countImage.gameObject.SetActive(false);
+        startImage.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1f);
+
+        startImage.gameObject.SetActive(false);
 
         // 씬 로드 시작
         SceneManager.sceneLoaded += OnSceneLoaded; // 씬 로드 이벤트 등록
@@ -396,7 +410,7 @@ public class networkManager : MonoBehaviourPunCallbacks
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
             }
             Lobby캔버스.SetActive(false); // Lobby Canvas 비활성화
-            count.gameObject.SetActive(false); // 카운트다운 텍스트 비활성화
+            countImage.gameObject.SetActive(false); // countImage 비활성화
 
             SceneManager.sceneLoaded -= OnSceneLoaded; // 이벤트 해제
         }

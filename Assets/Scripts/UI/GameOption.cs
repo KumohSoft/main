@@ -30,10 +30,13 @@ public class GameOption : MonoBehaviour
         resolutionDropdown.ClearOptions();
 
         // 해상도 목록 추가
+        List<string> resolutionOptions = new List<string>();
         foreach (Resolution resolution in resolutions)
         {
-            resolutionDropdown.options.Add(new Dropdown.OptionData(resolution.width + " x " + resolution.height));
+            resolutionOptions.Add(resolution.width + " x " + resolution.height);
         }
+
+        resolutionDropdown.AddOptions(resolutionOptions);
 
         // 현재 해상도를 기본값으로 설정
         resolutionDropdown.value = GetCurrentResolutionIndex();
@@ -46,23 +49,24 @@ public class GameOption : MonoBehaviour
         // 기존 옵션 제거
         screenModeDropdown.ClearOptions();
 
-        // 화면 모드 초기값 설정
-        screenModeDropdown.value = (int)GetCurrentScreenMode();
-        screenModeDropdown.onValueChanged.AddListener(SetScreenMode);
-
         // 화면 모드 목록 추가
-        screenModeDropdown.AddOptions(new System.Collections.Generic.List<string>
+        List<string> screenModeOptions = new List<string>
         {
             "전체 화면",
             "창 모드",
             "무경계 창 모드"
-        });
+        };
+        screenModeDropdown.AddOptions(screenModeOptions);
+
+        // 화면 모드 초기값 설정
+        screenModeDropdown.value = (int)GetCurrentScreenMode();
+        screenModeDropdown.onValueChanged.AddListener(SetScreenMode);
 
         // 마스터 볼륨 초기값 설정
         masterVolumeSlider.value = AudioListener.volume;
     }
 
-    // 현재 해상도의 인덱스 반환
+    // 현재 해상도의 인덱스를 반환
     int GetCurrentResolutionIndex()
     {
         for (int i = 0; i < resolutions.Length; i++)
@@ -73,7 +77,7 @@ public class GameOption : MonoBehaviour
                 return i;
             }
         }
-        return 0;
+        return 0; // 기본값
     }
 
     // 현재 화면 모드 반환
@@ -93,6 +97,7 @@ public class GameOption : MonoBehaviour
         if (index >= 0 && index < resolutions.Length)
         {
             Resolution resolution = resolutions[index];
+            // 현재 화면 모드와 선택된 해상도로 설정
             Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
         }
     }
@@ -102,6 +107,15 @@ public class GameOption : MonoBehaviour
     {
         FullScreenMode mode = (FullScreenMode)index;
         Screen.fullScreenMode = mode;
+
+        // 화면 모드가 바뀔 때마다 해상도를 재설정해야 할 수도 있음
+        // 예를 들어, 무경계 창 모드에서는 특정 해상도가 제한될 수 있음.
+        if (mode == FullScreenMode.Windowed || mode == FullScreenMode.FullScreenWindow)
+        {
+            // 해상도에 따라 자동으로 화면을 설정할 수 있도록 추가적인 처리
+            Resolution currentResolution = resolutions[resolutionDropdown.value];
+            Screen.SetResolution(currentResolution.width, currentResolution.height, mode);
+        }
     }
 
     // 마스터 볼륨 설정
