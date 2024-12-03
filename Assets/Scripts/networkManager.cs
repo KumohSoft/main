@@ -24,12 +24,14 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject LoginPanel;
     public GameObject LobbyPanel;
     public GameObject RoomPanel;
+    public static GameObject RoomPanel2;
 
     public GameObject 로그인중;
     public Text 로그인중text;
     private Coroutine loadingTextCoroutine;
 
     [Header("LobbyPanel")]
+    public static GameObject Lobby캔버스;
     public InputField RoomInput;
     public Button[] CellBtn;
     public Button PreviousBtn;
@@ -78,7 +80,8 @@ public class networkManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        
+        Lobby캔버스= GameObject.Find("LobbyCanvas");
+        RoomPanel2 = RoomPanel;
     }
 
     // Update is called once per frame
@@ -126,12 +129,41 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void JoinLobby() => PhotonNetwork.JoinLobby();
 
+    public void LeftRoom()
+    {
+        photonView.RPC("ReSetMynumRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.NickName);
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        
+        for (int i = 0; i < 4; i++)//방을 떠나면서 방 정보 초기화
+        {
+            playerBtn[i].interactable = false;
+            PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
+            playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
+            playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            ChatText[i].text = " ";
+        }
+        LobbyPanel.SetActive(true);
+        MakeRoomPanel.SetActive(false);
+        ClickPlayBTN();
+        RoomPanel.SetActive(false);
+        
+        PhotonNetwork.JoinLobby();
+        
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>", newPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
         }
     }
 
@@ -140,7 +172,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>", otherPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.All, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
         }
     }
 
@@ -152,6 +184,19 @@ public class networkManager : MonoBehaviourPunCallbacks
         StopCoroutine(loadingTextCoroutine);//코루틴 중단
         NickName.text = PhotonNetwork.LocalPlayer.NickName+"님";//닉네임 text를 로컬 플레이어 닉네임으로 설정
         print(PhotonNetwork.LocalPlayer.NickName);
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            HandleNewMasterClient();
+        }
+
+        void HandleNewMasterClient()
+        {
+            SetMynumRPC(PhotonNetwork.NickName, Mycharacter2 + 2);
+        }
     }
 
     public void MyListClick(int num)
@@ -202,6 +247,29 @@ public class networkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
+    void ReSetMynumRPC(string name)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i < PhotonNetwork.PlayerList.Length && PhotonNetwork.PlayerList[i].NickName == name)
+            {
+                playercharint[i] = 0;
+                for (int j = i; j < PhotonNetwork.PlayerList.Length; j++)
+                {
+                    playerReady[j] = playerReady[j + 1];
+                    playercharint[j] = playercharint[j + 1];
+                }
+            }
+            
+        }
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
+        }
+
+    }
+
+    [PunRPC]
     void SetMynumRPC(string name, int num)
     {
         for (int i = 0; i < 4; i++)
@@ -213,7 +281,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         }
         if(PhotonNetwork.IsMasterClient)
         {
-            UpdateGameState(playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
         }
         
     }
@@ -247,6 +315,7 @@ public class networkManager : MonoBehaviourPunCallbacks
             else
             {
                 playerBtn[i].interactable = false;
+                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
             }
@@ -302,15 +371,35 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     IEnumerator GameStart()
     {
-        count.text = "3";
+        count.gameObject.SetActive(true);
+        count.GetComponent<UnityEngine.UI.Text>().text = "3";
         yield return new WaitForSeconds(1f);
-        count.text = "2";
+        count.GetComponent<UnityEngine.UI.Text>().text = "2";
         yield return new WaitForSeconds(1f);
-        count.text = "1";
+        count.GetComponent<UnityEngine.UI.Text>().text = "1";
         yield return new WaitForSeconds(1f);
-        count.text = "0";
+        count.GetComponent<UnityEngine.UI.Text>().text = "0";
 
+        // 씬 로드 시작
+        SceneManager.sceneLoaded += OnSceneLoaded; // 씬 로드 이벤트 등록
         SceneManager.LoadScene("Game Scene");
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Game Scene이 로드되었을 때 실행
+        if (scene.name == "Game Scene")
+        {
+            for(int i=0; i<4; i++)
+            {
+                playerReady[i] = false;
+                playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);
+            }
+            Lobby캔버스.SetActive(false); // Lobby Canvas 비활성화
+            count.gameObject.SetActive(false); // 카운트다운 텍스트 비활성화
+
+            SceneManager.sceneLoaded -= OnSceneLoaded; // 이벤트 해제
+        }
     }
 
     IEnumerator UpdateLoadingText(Text temp, string S)

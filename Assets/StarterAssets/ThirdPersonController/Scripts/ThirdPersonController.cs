@@ -5,6 +5,8 @@ using UnityEngine.Audio;
 using TMPro;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using System.Collections;
+using UnityEngine.SceneManagement;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -126,12 +128,19 @@ namespace StarterAssets
         private int 쥐목숨 = 2;
         private bool 쥐맞음 = false;
         public bool live = true;
+        private bool 순간이동live = true;
 
         public TextMesh nickName;
         InGameNetworkManager inGameNetworkManager;
 
         bool 치즈flag = false;
         Chees temp;
+        bool 문flag = false;
+        DoorOpen DoorOpenscript;
+
+        private GameObject 살리기TEXT;
+        private Slider 발전기;
+        private GameObject 발전기Obejct;
 
         [Header("cat")]
         private int 쥐덫개수 = 3;
@@ -154,7 +163,7 @@ namespace StarterAssets
 
         private void OnCollisionEnter(Collision collision)
         {
-           
+
         }
         private void OnTriggerEnter(Collider other)
         {
@@ -173,18 +182,18 @@ namespace StarterAssets
             {
                 Debug.Log("충돌 발생: " + other.name);
                 ThirdPersonController temp = other.GetComponent<ThirdPersonController>();
-                if (temp != null&& temp!=parentScript)
+                if (temp != null && temp != parentScript)
                 {
                     print("널아님?");
                     print(temp.live);
-                   
+
                     if (temp.live == false)
                     {
                         print("살리긴함");
                         temp.살림();
                     }
                 }
-                
+
             }
             if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
             {
@@ -193,6 +202,12 @@ namespace StarterAssets
                 //temp.게이지증가();
             }
 
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("door"))
+            {
+                문flag = true;
+                DoorOpenscript = other.gameObject.GetComponent<DoorOpen>();
+                //temp.게이지증가();
+            }
         }
 
         private void OnTriggerStay(Collider other)
@@ -211,12 +226,18 @@ namespace StarterAssets
                 temp = null;
             }
 
-               
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("door"))
+            {
+                문flag = false;
+                DoorOpenscript = null;
+            }
+
+
         }
 
         private void Awake()
         {
-            if(PhotonNetwork.IsMasterClient)//닉네임을 아군만 표시
+            if (PhotonNetwork.IsMasterClient)//닉네임을 아군만 표시
             {
                 if (gameObject.CompareTag("mouse"))
                 {
@@ -225,7 +246,7 @@ namespace StarterAssets
             }
             else
             {
-                if(gameObject.CompareTag("cat"))
+                if (gameObject.CompareTag("cat"))
                 {
                     nickName.gameObject.SetActive(false);
                 }
@@ -249,6 +270,7 @@ namespace StarterAssets
 
         private void Start()
         {
+            _hasAnimator = TryGetComponent(out _animator);
             if (photonView.IsMine)
             {
                 _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -269,7 +291,10 @@ namespace StarterAssets
                 _fallTimeoutDelta = FallTimeout;
 
                 inGameNetworkManager = FindObjectOfType<InGameNetworkManager>();
-
+                살리기TEXT = GameObject.Find("발전기Image");
+                GameObject 발전기Obejct = GameObject.Find("게이지Slider");
+                발전기 = 발전기Obejct.GetComponent<Slider>();
+                발전기Obejct.SetActive(false);
                 //skillTimeObject = GameObject.Find("스킬");
                 if (networkManager.MySkill == 0 || gameObject.CompareTag("mouse"))
                 {
@@ -277,19 +302,19 @@ namespace StarterAssets
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트");
                     temp.SetActive(false);
-                    if(gameObject.CompareTag("mouse"))
+                    if (gameObject.CompareTag("mouse"))
                     {
                         쥐덫 = GameObject.Find("쥐덫");
                         쥐덫.SetActive(false);
                     }
-                            
+
                 }
-                if(gameObject.CompareTag("cat"))
+                if (gameObject.CompareTag("cat"))
                 {
                     쥐덫 = GameObject.Find("쥐덫");
                     쥐덫개수text = 쥐덫.GetComponentInChildren<Text>();
                 }
-                if (networkManager.MySkill == 1&&gameObject.CompareTag("cat"))
+                if (networkManager.MySkill == 1 && gameObject.CompareTag("cat"))
                 {
                     GameObject temp1 = GameObject.Find("헤이스트");
                     temp1.SetActive(false);
@@ -312,12 +337,16 @@ namespace StarterAssets
             if (photonView.IsMine)
             {
                 _hasAnimator = TryGetComponent(out _animator);
-                JumpAndGravity();
-                GroundedCheck();
-                Move();
+                if (순간이동live)
+                {
+                    JumpAndGravity();
+                    GroundedCheck();
+                    Move();
+                }
+
                 if (live)//!_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack")
                 {
-                    
+
                 }
 
                 if (Input.GetMouseButtonDown(0) && !isAttacking && (gameObject.CompareTag("cat")))
@@ -341,11 +370,11 @@ namespace StarterAssets
                         SprintSpeed = 10;
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.T)&&gameObject.CompareTag("cat")&&쥐덫개수>0)
+                if (Input.GetKeyDown(KeyCode.T) && gameObject.CompareTag("cat") && 쥐덫개수 > 0)
                 {
                     PhotonNetwork.Instantiate("쥐덫1", 쥐덫생성position.transform.position, Quaternion.Euler(90, 0, 0));
                     쥐덫개수--;
-                    쥐덫개수text.text = "쥐덫개수:"+쥐덫개수.ToString();
+                    쥐덫개수text.text = "쥐덫개수:" + 쥐덫개수.ToString();
                 }
                 if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
                 {
@@ -374,8 +403,10 @@ namespace StarterAssets
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
                     공격받음();
-                        
+
                 }
+
+                
                 if (쥐맞음)
                 {
                     if (skillTime > 0)
@@ -391,10 +422,17 @@ namespace StarterAssets
                     }
                 }
 
-                if(치즈flag&&temp!=null&& Input.GetKey(KeyCode.E))
+                
+                if (치즈flag && temp != null && Input.GetKey(KeyCode.E))
                 {
                     print("됨");
                     temp.게이지증가();
+                }
+
+                if (문flag && DoorOpenscript != null && Input.GetKey(KeyCode.E))
+                {
+                    print("됨");
+                    DoorOpenscript.게이지증가();
                 }
             }
         }
@@ -454,7 +492,7 @@ namespace StarterAssets
 
         private void Move()
         {
-            if(live)
+            if (live)
             {
                 // set target speed based on move speed, sprint speed and if sprint is pressed
                 float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
@@ -513,11 +551,11 @@ namespace StarterAssets
                     _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 }
             }
-            
+
 
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            if(!live)
+            if (!live)
             {
                 targetDirection = Vector3.zero;
             }
@@ -526,7 +564,7 @@ namespace StarterAssets
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            
+
         }
 
         private void JumpAndGravity()
@@ -550,7 +588,7 @@ namespace StarterAssets
                 }
 
                 // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f&&live)//살아있다면 점프가능
+                if (_input.jump && _jumpTimeoutDelta <= 0.0f && live)//살아있다면 점프가능
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -644,7 +682,7 @@ namespace StarterAssets
                 }
             }
         }
-            
+
 
 
 
@@ -659,13 +697,14 @@ namespace StarterAssets
             print("살아남");
             live = true;
             쥐목숨 = 2;
+
+            _animator.SetTrigger("DieToMove");
             if (photonView.IsMine)
             {
-                _animator.SetTrigger("DieToMove");
                 inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
             }
         }
-        
+
         public void OnAttackEnd()
         {
             print("실행딤");
@@ -749,13 +788,20 @@ namespace StarterAssets
 
         public void 공격받음()
         {
-            photonView.RPC("공격받음RPC", RpcTarget.All);
+            
+            if (!쥐맞음)
+            {
+                print("여러번");
+                photonView.RPC("공격받음RPC", RpcTarget.All);
+                쥐맞음 = true;
+            }
+                
         }
 
         [PunRPC]
         void 공격받음RPC()//이 코드 반응속도 때문에 수정필요할듯
         {
-            if(!쥐맞음)
+            if (!쥐맞음)
             {
                 쥐목숨--;
                 if (쥐목숨 == 1)
@@ -771,22 +817,30 @@ namespace StarterAssets
                 }
                 if (쥐목숨 == 0)//왜 따로 if문을 사용?? 흠
                 {
-                    if(photonView.IsMine)
+                    
+                    if (photonView.IsMine)
                     {
                         _animator.ResetTrigger("DieToMove");
                         _animator.SetTrigger("MoveToDie");
                     }
                     live = false;
                     print(live);
+                    
                     if (photonView.IsMine)
                     {
                         inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
+                        Vector3 감옥position= new Vector3(-39, 4, -27);
+                        StartCoroutine(감옥GO(감옥position));
+                        inGameNetworkManager.사망수UP();
+
+                        //여기서 감옥으로 이동시킨다. 2초뒤에
+                        //그리고 다시 살린다??
                     }
                     //기절
+
+
                 }
                 print(쥐목숨);
-                
-                
             }
 
         }
@@ -806,19 +860,53 @@ namespace StarterAssets
             }
         }
 
-        public void 순간이동(Vector3 spawnPositioni)
+        public void 순간이동(Vector3 spawnPositioni,int num)
         {
-            photonView.RPC("순간이동RPC", RpcTarget.AllBuffered, spawnPositioni);
+            photonView.RPC("순간이동RPC", RpcTarget.All, spawnPositioni,num);
         }
 
         [PunRPC]
-        private void 순간이동RPC(Vector3 spawnPositioni)
+        private void 순간이동RPC(Vector3 spawnPositioni, int num)
         {
-            if(photonView.IsMine)
+            if (photonView.IsMine)
             {
+                순간이동live = false;
+               
+                print("진짜이동함");
                 transform.position = spawnPositioni;
+                StartCoroutine(순간이동코루틴(spawnPositioni, num));
+
             }
         }
 
+        IEnumerator 순간이동코루틴(Vector3 spawnPositioni, int num)
+        {
+            while(true)
+            {
+                yield return new WaitForSeconds(0.5f);
+                if (transform.position == spawnPositioni)
+                {
+                    순간이동live = true;
+                    if(num==1)//num으로 확인을 해줘야 됨.......
+                    {
+                        //살림();
+                    }
+                    break;
+                }
+                else
+                {
+                    transform.position = spawnPositioni;
+                }               
+            }
+        }
+
+        IEnumerator 감옥GO(Vector3 spawnPositioni)
+        {
+            yield return new WaitForSeconds(2f);
+            _animator.ResetTrigger("DieToMove");
+            살림();
+            순간이동(spawnPositioni,1);
+            
+        }
     }
 }

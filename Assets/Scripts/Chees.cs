@@ -31,7 +31,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
         if (other.CompareTag("mouse")&&flag)
         {
             PhotonView temp = other.gameObject.GetComponent<PhotonView>();
-            if(temp.IsMine)
+            if(temp != null && temp.IsMine)
             {
                 /*PhotonView photonView = gameObject.GetComponent<PhotonView>();
                 int viewID = photonView.ViewID;
@@ -51,7 +51,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
         if (other.CompareTag("mouse") && flag)
         {
             PhotonView temp = other.gameObject.GetComponent<PhotonView>();
-            if (temp.IsMine)
+            if (temp!=null&&temp.IsMine)
             {
                 발전기.value = 게이지;
             }
@@ -65,7 +65,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
         if (other.CompareTag("mouse") && flag)
         {
             PhotonView temp = other.gameObject.GetComponent<PhotonView>();
-            if (temp.IsMine)
+            if (temp != null && temp.IsMine)
             {
                 발전기TEXT.SetActive(false);
                 발전기.gameObject.SetActive(false);
