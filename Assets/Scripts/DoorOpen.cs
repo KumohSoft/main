@@ -127,7 +127,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
             발전기TEXT.SetActive(false);
             발전기.gameObject.SetActive(false);
         }
-        inGameNetworkManager.
+        //inGameNetworkManager.
     }
 
     IEnumerator OpenDoorCoroutine()
