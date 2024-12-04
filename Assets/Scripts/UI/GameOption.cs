@@ -33,7 +33,10 @@ public class GameOption : MonoBehaviour
         List<string> resolutionOptions = new List<string>();
         foreach (Resolution resolution in resolutions)
         {
-            resolutionOptions.Add(resolution.width + " x " + resolution.height);
+            if (Mathf.Approximately((float)resolution.width / resolution.height, 16f / 9f))
+            {
+                resolutionOptions.Add(resolution.width + " x " + resolution.height);
+            }
         }
 
         resolutionDropdown.AddOptions(resolutionOptions);
