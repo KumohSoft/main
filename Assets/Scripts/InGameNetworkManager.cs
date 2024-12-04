@@ -96,7 +96,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             Cursor.visible = true;
             networkManager.LobbyÄµ¹ö½º.SetActive(true);
             SceneManager.LoadScene("LobbyScene");*/
-            photonView.RPC("GameOverRPC", RpcTarget.All,1);
+            if(photonView.IsMine)
+            {
+                photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+            }
+            
         }
     }
 
@@ -228,9 +232,9 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     void »ç¸Á¼öUPRPC()
     {
         »ç¸Á¼ö++;
-        if (photonView.IsMine && »ç¸Á¼ö == PhotonNetwork.PlayerList.Length - 1)
+        if (photonView.IsMine && PhotonNetwork.IsMasterClient &&»ç¸Á¼ö == PhotonNetwork.PlayerList.Length - 1)
         {
-            photonView.RPC("GameOverRPC", RpcTarget.All);
+            photonView.RPC("GameOverRPC", RpcTarget.All,1);
         }
     }
 

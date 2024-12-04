@@ -75,6 +75,8 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject[] PlayerChar;
     public GameObject MakeRoomPanel;
     public Button ReadyBTN;
+    public Text ReadyText;
+    public Button ExitBTN;
     
 
 
@@ -144,10 +146,12 @@ public class networkManager : MonoBehaviourPunCallbacks
             SetMynumRPC(PhotonNetwork.NickName,Mycharacter2+2);//마스터클라이언트는 고양이
 
             UpdateGameState(playerReady, playercharint,0);
+            ReadyText.text = "START";
         }
         else
         {
             photonView.RPC("SetMynumRPC", RpcTarget.All, PhotonNetwork.NickName, Mycharacter);//들어오면 자신이 선택한 캐릭터 정보를 뿌린다.
+            ReadyText.text = "READY";
         }
     }
     public override void OnDisconnected(DisconnectCause cause) => print("연결끊김");
@@ -221,6 +225,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         void HandleNewMasterClient()
         {
             SetMynumRPC(PhotonNetwork.NickName, Mycharacter2 + 2);
+            ReadyText.text = "START";
         }
     }
 
@@ -324,7 +329,10 @@ public class networkManager : MonoBehaviourPunCallbacks
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = PhotonNetwork.PlayerList[i].NickName;
                 if (playerReady2[i])
                 {
-                    playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 0f);  // RGB: 255, 255, 0
+                    if(i!=0)
+                    {
+                        playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 0f);  // RGB: 255, 255, 0
+                    }
                 }
                 else
                 {
@@ -349,16 +357,40 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void Ready()
     {
-        int num = 0;
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        if(PhotonNetwork.IsMasterClient)
         {
-            if (PhotonNetwork.PlayerList[i].NickName == PhotonNetwork.LocalPlayer.NickName)
+            if (PhotonNetwork.PlayerList.Length >= 1)
             {
-                num = i;
-                break;
+                bool sig = true;
+                for (int i = 1; i < PhotonNetwork.PlayerList.Length; i++)
+                {
+                    if (!playerReady[i])
+                    {
+                        sig = false;
+                    }
+                }
+
+                if (sig)
+                {
+                    photonView.RPC("GameStartRPC", RpcTarget.All);
+                }
             }
         }
-        photonView.RPC("ReadyRPC", RpcTarget.All, num);
+        else
+        {
+            int num = 0;
+            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+            {
+                if (PhotonNetwork.PlayerList[i].NickName == PhotonNetwork.LocalPlayer.NickName)
+                {
+                    num = i;
+                    break;
+                }
+            }
+            photonView.RPC("ReadyRPC", RpcTarget.All, num);
+        }
+        
+        
     }
 
     [PunRPC]
@@ -374,29 +406,19 @@ public class networkManager : MonoBehaviourPunCallbacks
             playerReady[num] = false;
             playerBtn[num].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
         }
+    }
+    
 
-        if (PhotonNetwork.PlayerList.Length >= 1)
-        {
-            bool sig = true;
-            for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-            {
-                if (!playerReady[i])
-                {
-                    sig = false;
-                }
-            }
-           
-
-            if (sig)
-            {
-                StartCoroutine(GameStart());
-            }
-        }
+    [PunRPC]
+    void GameStartRPC()
+    {
+        StartCoroutine(GameStart());
     }
 
     IEnumerator GameStart()
     {
         ReadyBTN.interactable = false;
+        ExitBTN.interactable = false;
         countImage.gameObject.SetActive(true);
         startImage.gameObject.SetActive(false);
 
@@ -419,6 +441,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         SceneManager.sceneLoaded += OnSceneLoaded; // 씬 로드 이벤트 등록
         SceneManager.LoadScene("Game Scene");
         ReadyBTN.interactable = true;
+        ExitBTN.interactable = true;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
