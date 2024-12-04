@@ -52,17 +52,16 @@ public class GameOption : MonoBehaviour
         // 기존 옵션 제거
         screenModeDropdown.ClearOptions();
 
-        // 화면 모드 목록 추가
+        // 화면 모드 목록 추가 (전체 화면과 창 모드만 남김)
         List<string> screenModeOptions = new List<string>
         {
             "전체 화면",
-            "창 모드",
-            "무경계 창 모드"
+            "창 모드"
         };
         screenModeDropdown.AddOptions(screenModeOptions);
 
         // 화면 모드 초기값 설정
-        screenModeDropdown.value = (int)GetCurrentScreenMode();
+        screenModeDropdown.value = Screen.fullScreen ? 0 : 1; // 전체 화면: 0, 창 모드: 1
         screenModeDropdown.onValueChanged.AddListener(SetScreenMode);
 
         // 마스터 볼륨 초기값 설정
@@ -83,42 +82,25 @@ public class GameOption : MonoBehaviour
         return 0; // 기본값
     }
 
-    // 현재 화면 모드 반환
-    FullScreenMode GetCurrentScreenMode()
-    {
-        if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
-            return FullScreenMode.FullScreenWindow;
-        else if (Screen.fullScreenMode == FullScreenMode.Windowed)
-            return FullScreenMode.Windowed;
-        else
-            return FullScreenMode.ExclusiveFullScreen;
-    }
-
     // 해상도 설정
     void SetResolution(int index)
     {
         if (index >= 0 && index < resolutions.Length)
         {
             Resolution resolution = resolutions[index];
-            // 현재 화면 모드와 선택된 해상도로 설정
-            Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
+            Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
         }
     }
 
     // 화면 모드 설정
     void SetScreenMode(int index)
     {
-        FullScreenMode mode = (FullScreenMode)index;
-        Screen.fullScreenMode = mode;
+        // index 0: 전체 화면, 1: 창 모드
+        bool isFullScreen = index == 0;
 
-        // 화면 모드가 바뀔 때마다 해상도를 재설정해야 할 수도 있음
-        // 예를 들어, 무경계 창 모드에서는 특정 해상도가 제한될 수 있음.
-        if (mode == FullScreenMode.Windowed || mode == FullScreenMode.FullScreenWindow)
-        {
-            // 해상도에 따라 자동으로 화면을 설정할 수 있도록 추가적인 처리
-            Resolution currentResolution = resolutions[resolutionDropdown.value];
-            Screen.SetResolution(currentResolution.width, currentResolution.height, mode);
-        }
+        // 현재 선택된 해상도와 화면 모드 설정
+        Resolution currentResolution = resolutions[resolutionDropdown.value];
+        Screen.SetResolution(currentResolution.width, currentResolution.height, isFullScreen);
     }
 
     // 마스터 볼륨 설정
