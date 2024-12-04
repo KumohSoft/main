@@ -146,11 +146,13 @@ public class networkManager : MonoBehaviourPunCallbacks
             SetMynumRPC(PhotonNetwork.NickName,Mycharacter2+2);//마스터클라이언트는 고양이
 
             UpdateGameState(playerReady, playercharint,0);
+            ReadyBTN.GetComponent<Image>().color = new Color(0f / 255f, 191f / 255f, 255f / 255f);
             ReadyText.text = "START";
         }
         else
         {
             photonView.RPC("SetMynumRPC", RpcTarget.All, PhotonNetwork.NickName, Mycharacter);//들어오면 자신이 선택한 캐릭터 정보를 뿌린다.
+            ReadyBTN.GetComponent<Image>().color = new Color(87f / 255f, 255f / 255f, 0f / 255f);
             ReadyText.text = "READY";
         }
     }
@@ -225,6 +227,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         void HandleNewMasterClient()
         {
             SetMynumRPC(PhotonNetwork.NickName, Mycharacter2 + 2);
+            ReadyBTN.GetComponent<Image>().color = new Color(0f / 255f, 191f / 255f, 255f / 255f);
             ReadyText.text = "START";
         }
     }
