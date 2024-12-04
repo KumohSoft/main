@@ -5,6 +5,7 @@ using Firebase;
 using Firebase.Extensions;
 using Firebase.Firestore;
 using System;
+using System.Collections;
 
 public class firebaseLogin : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class firebaseLogin : MonoBehaviour
     public InputField signUpPassword;
     public InputField signUpPassword2;
     public GameObject SignUpPanel;
+    public Text 오류text;
+    public Text 로그인오류text;
 
     public InputField email;
     public InputField password;
@@ -71,40 +74,69 @@ public class firebaseLogin : MonoBehaviour
     }
     public void Create()
     {
-        auth.CreateUserWithEmailAndPasswordAsync(signUpEmail.text, signUpPassword.text).ContinueWithOnMainThread(task =>
+        if(signUpPassword.text== signUpPassword2.text)
         {
-            if (task.IsCanceled)
+            auth.CreateUserWithEmailAndPasswordAsync(signUpEmail.text, signUpPassword.text).ContinueWithOnMainThread(task =>
             {
-                Debug.Log("회원가입 취소");
-            }
+                if (task.IsCanceled)
+                {
+                    Debug.Log("회원가입 취소");
+                }
 
-            if (task.IsFaulted)
-            {
-                Debug.Log("회원가입 실패");
+                if (task.IsFaulted)
+                {
+                    Debug.Log("회원가입 실패");
+                    foreach (var exception in task.Exception.Flatten().InnerExceptions)
+                    {
+                        if (exception is Firebase.FirebaseException firebaseException)
+                        {
+                            var errorCode = (AuthError)firebaseException.ErrorCode;
 
-            }
-            AuthResult authResult = task.Result;
-            FirebaseUser newuser = authResult.User;
+                            switch (errorCode)
+                            {
+                                case AuthError.WeakPassword:
+                                    StartCoroutine(오류textTime("비밀번호가 너무 약합니다."));
+                                    break;
+                                case AuthError.InvalidEmail:
+                                    StartCoroutine(오류textTime("잘못된 이메일 형식입니다."));
+                                    break;
+                                case AuthError.EmailAlreadyInUse:
+                                    StartCoroutine(오류textTime("이미 사용 중인 이메일입니다."));
+                                    break;
+                                default:
+                                    Debug.Log($"Firebase 오류: {firebaseException.Message}");
+                                    break;
+                            }
+                        }
+                    }
+                }
+                AuthResult authResult = task.Result;
+                FirebaseUser newuser = authResult.User;
 
 
-            DocumentReference newdata = db.Collection("PlayerInfos").Document(newuser.Email);
+                DocumentReference newdata = db.Collection("PlayerInfos").Document(newuser.Email);
 
-            PlayerInfo newPlayer = new PlayerInfo
-            {
-                NickName = nickName.text,
-                Gold = 0,
-                WinCount = 0,
-                LoseCount = 0,
-                Level = 1,
-                Character = new int[4],
-                Item = new int[4]
-            };
-            newdata.SetAsync(newPlayer).ContinueWithOnMainThread(task =>
-            {
+                PlayerInfo newPlayer = new PlayerInfo
+                {
+                    NickName = nickName.text,
+                    Gold = 0,
+                    WinCount = 0,
+                    LoseCount = 0,
+                    Level = 1,
+                    Character = new int[4],
+                    Item = new int[4]
+                };
+                newdata.SetAsync(newPlayer).ContinueWithOnMainThread(task =>
+                {
 
+                });
+                SignUpPanel.SetActive(false);
             });
-            SignUpPanel.SetActive(false);
-        });
+        }
+        else
+        {
+            StartCoroutine(오류textTime("비밀번호가 일치하지 않습니다."));
+        }
     }
 
     public void Login()
@@ -118,6 +150,7 @@ public class firebaseLogin : MonoBehaviour
             if (task.IsFaulted)
             {
                 Debug.Log("로그인 실패");
+                StartCoroutine(로그인오류textTime());
                 //로그인오류.SetActive(true);
             }
             AuthResult authResult = task.Result;
@@ -259,5 +292,19 @@ public class firebaseLogin : MonoBehaviour
             listenerRegistration.Stop();
             listenerRegistration = null;
         }
+    }
+
+    IEnumerator 오류textTime(string text)
+    {
+        오류text.text =text;
+        오류text.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        오류text.gameObject.SetActive(false);
+    }
+    IEnumerator 로그인오류textTime()
+    {
+        로그인오류text.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        로그인오류text.gameObject.SetActive(false);
     }
 }

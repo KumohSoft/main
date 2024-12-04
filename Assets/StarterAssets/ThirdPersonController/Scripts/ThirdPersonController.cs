@@ -372,7 +372,10 @@ namespace StarterAssets
                 }
                 if (Input.GetKeyDown(KeyCode.T) && gameObject.CompareTag("cat") && 쥐덫개수 > 0)
                 {
-                    PhotonNetwork.Instantiate("쥐덫1", 쥐덫생성position.transform.position, Quaternion.Euler(90, 0, 0));
+                    Vector3 trapPosition = 쥐덫생성position.transform.position;
+                    // y 값을 0으로 설정
+                    trapPosition.y = 0;
+                    PhotonNetwork.Instantiate("쥐덫1", trapPosition, Quaternion.identity);
                     쥐덫개수--;
                     쥐덫개수text.text = "쥐덫개수:" + 쥐덫개수.ToString();
                 }

@@ -73,7 +73,8 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject[] GameChar2;
     public GameObject[] GameChar2고양이;
     public GameObject[] PlayerChar;
-    public GameObject MakeRoomPanel; 
+    public GameObject MakeRoomPanel;
+    public Button ReadyBTN;
     
 
 
@@ -110,7 +111,26 @@ public class networkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
         print("서버접속완료");
     }
-    public void CreateRoom() => PhotonNetwork.CreateRoom(RoomInput.text == "" ? "Room" + UnityEngine.Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 8 });
+    private bool isCreatingRoom = false;
+    public void CreateRoom()
+    {
+        if(isCreatingRoom)
+        {
+            print("이미 생성중");
+        }
+        else
+        {
+            isCreatingRoom = true;
+            PhotonNetwork.CreateRoom(RoomInput.text == "" ? "Room" + UnityEngine.Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
+        }
+       
+    }
+
+    public override void OnCreatedRoom()
+    {
+        isCreatingRoom = false;
+    }
+
     public void Disconnect() => PhotonNetwork.Disconnect();
     public override void OnJoinedRoom()
     {
@@ -123,7 +143,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         {
             SetMynumRPC(PhotonNetwork.NickName,Mycharacter2+2);//마스터클라이언트는 고양이
 
-            UpdateGameState(playerReady, playercharint);
+            UpdateGameState(playerReady, playercharint,0);
         }
         else
         {
@@ -168,7 +188,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + newPlayer.NickName + "님이 참가하셨습니다</color>", newPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint,0);
         }
     }
 
@@ -177,7 +197,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>", otherPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint,0);
         }
     }
 
@@ -269,7 +289,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         }
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint,1);
         }
 
     }
@@ -286,19 +306,19 @@ public class networkManager : MonoBehaviourPunCallbacks
         }
         if(PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint,0);
         }
         
     }
 
     [PunRPC]
-    void UpdateGameState(bool[] playerReady2, int[] playercharint2)//레디 상황과 선택한 캐릭터를 활성화 시키는 함수
+    void UpdateGameState(bool[] playerReady2, int[] playercharint2, int leaveSig)//레디 상황과 선택한 캐릭터를 활성화 시키는 함수
     {
         playerReady = playerReady2;
         playercharint = playercharint2;
         for (int i = 0; i < 4; i++)
         {
-            if (i < PhotonNetwork.PlayerList.Length)
+            if (i < PhotonNetwork.PlayerList.Length- leaveSig)
             {
                 playerBtn[i].interactable = true;
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = PhotonNetwork.PlayerList[i].NickName;
@@ -376,6 +396,7 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     IEnumerator GameStart()
     {
+        ReadyBTN.interactable = false;
         countImage.gameObject.SetActive(true);
         startImage.gameObject.SetActive(false);
 
@@ -397,6 +418,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         // 씬 로드 시작
         SceneManager.sceneLoaded += OnSceneLoaded; // 씬 로드 이벤트 등록
         SceneManager.LoadScene("Game Scene");
+        ReadyBTN.interactable = true;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
