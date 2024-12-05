@@ -48,29 +48,35 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            if (networkManager.Mycharacter2 == 0)
-            {
-                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-45, 153, 1), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
-            }
-            else if (networkManager.Mycharacter2 == 1)
-            {
-                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 153, 1), Quaternion.identity);
-            }
+            
+                if (networkManager.Mycharacter2 == 0)
+                {
+                    Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-45, 153, 1), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
+                }
+                else if (networkManager.Mycharacter2 == 1)
+                {
+                    Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 153, 1), Quaternion.identity);
+                }
+            
+            
 
         }
         else
         {
-            if (networkManager.Mycharacter == 0)
-            {
-                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-40, 153, 1), Quaternion.identity);
-            }
+            
+                if (networkManager.Mycharacter == 0)
+                {
+                    Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-40, 153, 1), Quaternion.identity);
+                }
 
-            else if (networkManager.Mycharacter == 1)
-            {
-                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 153, 1), Quaternion.identity);
-            }
+                else if (networkManager.Mycharacter == 1)
+                {
+                    Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 153, 1), Quaternion.identity);
+                }
+            
+                
         }
-
+       
         photonView.RPC("LoadComplete", RpcTarget.MasterClient);
         치즈개수Text.text = "치즈개수:" + 치즈개수.ToString();
     }
@@ -188,7 +194,9 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     IEnumerator CountStart(Vector3 spawnPositioni)
     {
-        for(int i=10; i>=0; i--)
+        
+
+        for (int i=10; i>=0; i--)
         {
             Time.text = i.ToString();
             yield return new WaitForSeconds(1f);
@@ -206,7 +214,53 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         StartCoroutine(GameOver코루틴(num));
     }
 
+    int Playercount = 0;
+    [PunRPC]
+    void ConfirmDestroy()
+    {
+        Playercount++;
+        if(Playercount==PhotonNetwork.PlayerList.Length)
+        {
+            Time.gameObject.SetActive(false);
 
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            networkManager.Lobby캔버스.SetActive(true);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                networkManager.방복귀();
+            }
+
+            SceneManager.LoadScene("LobbyScene");
+        }
+    }
+    IEnumerator DestroyMyCharacter()
+    {
+        if (Mycharactor != null)
+        {
+            int viewID = photonView.ViewID;
+
+            PhotonNetwork.Destroy(Mycharactor);
+            Debug.Log("Destroying Mycharactor...");
+
+            while (true)
+            {
+                if(Mycharactor == null)
+                {
+                    break;
+                }
+                else
+                {
+                    print("삭제중");
+                    yield return null; // 한 프레임 대기
+                }
+                
+            }
+        }
+
+        photonView.RPC("ConfirmDestroy", RpcTarget.All);
+
+    }
     IEnumerator GameOver코루틴(int num)
     {
         Time.gameObject.SetActive(true);
@@ -215,12 +269,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             Time.text = "Game Over"+"\n"+i.ToString()+"초 후 로비로 돌아갑니다.";
             yield return new WaitForSeconds(1f);
         }
-        Time.gameObject.SetActive(false);
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        networkManager.Lobby캔버스.SetActive(true);
-        SceneManager.LoadScene("LobbyScene");
+        StartCoroutine(DestroyMyCharacter());
     }
 
     public void 사망수UP()

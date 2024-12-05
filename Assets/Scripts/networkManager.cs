@@ -127,7 +127,13 @@ public class networkManager : MonoBehaviourPunCallbacks
         else
         {
             isCreatingRoom = true;
-            PhotonNetwork.CreateRoom(RoomInput.text == "" ? "Room" + UnityEngine.Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
+            RoomOptions roomOptions = new RoomOptions
+            {
+                MaxPlayers = 4,
+                CustomRoomProperties = new ExitGames.Client.Photon.Hashtable { { "isGameStarted", false } },
+                CustomRoomPropertiesForLobby = new string[] { "isGameStarted" }
+            };
+            PhotonNetwork.CreateRoom(RoomInput.text == "" ? "Room" + UnityEngine.Random.Range(0, 100) : RoomInput.text, roomOptions);
         }
        
     }
@@ -159,6 +165,8 @@ public class networkManager : MonoBehaviourPunCallbacks
             ReadyBTN.GetComponent<Image>().color = new Color(87f / 255f, 255f / 255f, 0f / 255f);
             ReadyText.text = "READY";
         }
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
     public override void OnDisconnected(DisconnectCause cause) => print("연결끊김");
 
@@ -170,27 +178,11 @@ public class networkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
+    bool roomToLobby = false;
     public override void OnLeftRoom()
     {
-        
-        for (int i = 0; i < 4; i++)//방을 떠나면서 방 정보 초기화
-        {
-            playerBtn[i].interactable = false;
-            PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
-            playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
-            playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
-        }
-        for (int i = 0; i < 9; i++)
-        {
-            ChatText[i].text = " ";
-        }
-        LobbyPanel.SetActive(true);
-        MakeRoomPanel.SetActive(false);
-        ClickPlayBTN();
-        RoomPanel.SetActive(false);
-        
+        roomToLobby = true;
         PhotonNetwork.JoinLobby();
-        
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -213,12 +205,35 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()//로비에 접속하면??
     {
-        로그인중.SetActive(false);
-        LoginPanel.SetActive(false);
-        LobbyPanel.SetActive(true);
-        StopCoroutine(loadingTextCoroutine);//코루틴 중단
-        NickName.text = PhotonNetwork.LocalPlayer.NickName+"님";//닉네임 text를 로컬 플레이어 닉네임으로 설정
-        print(PhotonNetwork.LocalPlayer.NickName);
+        if(roomToLobby==false)
+        {
+            로그인중.SetActive(false);
+            LoginPanel.SetActive(false);
+            LobbyPanel.SetActive(true);
+            StopCoroutine(loadingTextCoroutine);//코루틴 중단
+            NickName.text = PhotonNetwork.LocalPlayer.NickName + "님";//닉네임 text를 로컬 플레이어 닉네임으로 설정
+            print(PhotonNetwork.LocalPlayer.NickName);
+        }
+        else
+        {
+            roomToLobby = false;
+            for (int i = 0; i < 4; i++)//방을 떠나면서 방 정보 초기화
+            {
+                playerBtn[i].interactable = false;
+                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
+                playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
+                playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                ChatText[i].text = " ";
+            }
+            LobbyPanel.SetActive(true);
+            MakeRoomPanel.SetActive(false);
+            ClickPlayBTN();
+            RoomPanel.SetActive(false);
+        }
+        
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -240,7 +255,21 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         if (num == -2) --currentPage;
         else if (num == -1) ++currentPage;
-        else PhotonNetwork.JoinRoom(myList[multiple + num].Name);
+        else
+        {
+            var roomInfo = myList[multiple + num];
+            bool isGameStarted = roomInfo.CustomProperties.ContainsKey("isGameStarted") && (bool)roomInfo.CustomProperties["isGameStarted"];
+            if(!isGameStarted)
+            {
+                PhotonNetwork.JoinRoom(myList[multiple + num].Name);
+            }
+            else
+            {
+                print("게임이 이미 시작 됨");
+            }
+            
+        }
+       
         MyListRenewal();
     }
 
@@ -257,9 +286,23 @@ public class networkManager : MonoBehaviourPunCallbacks
         multiple = (currentPage - 1) * CellBtn.Length;
         for (int i = 0; i < CellBtn.Length; i++)
         {
-            CellBtn[i].interactable = (multiple + i < myList.Count) ? true : false;
-            CellBtn[i].transform.GetChild(0).GetComponent<Text>().text = (multiple + i < myList.Count) ? myList[multiple + i].Name : "";
-            CellBtn[i].transform.GetChild(1).GetComponent<Text>().text = (multiple + i < myList.Count) ? myList[multiple + i].PlayerCount + "/" + myList[multiple + i].MaxPlayers : "";
+            if (multiple + i < myList.Count)
+            {
+                var roomInfo = myList[multiple + i];
+                bool isGameStarted = roomInfo.CustomProperties.ContainsKey("isGameStarted") && (bool)roomInfo.CustomProperties["isGameStarted"];
+
+                CellBtn[i].interactable = !isGameStarted; // 게임이 시작되었으면 비활성화
+                CellBtn[i].transform.GetChild(0).GetComponent<Text>().text = roomInfo.Name;
+                CellBtn[i].transform.GetChild(1).GetComponent<Text>().text = roomInfo.PlayerCount + "/" + roomInfo.MaxPlayers;
+            }
+            else
+            {
+                CellBtn[i].interactable = false;
+                CellBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
+                CellBtn[i].transform.GetChild(1).GetComponent<Text>().text = "";
+            }
+
+          
         }
     }
 
@@ -449,6 +492,17 @@ public class networkManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("Game Scene");
         ReadyBTN.interactable = true;
         ExitBTN.interactable = true;
+        if(PhotonNetwork.IsMasterClient)
+        {
+            ExitGames.Client.Photon.Hashtable gameStartedProps = new ExitGames.Client.Photon.Hashtable { { "isGameStarted", true } };
+            PhotonNetwork.CurrentRoom.SetCustomProperties(gameStartedProps);
+        }
+    }
+
+    public static void 방복귀()
+    {
+        ExitGames.Client.Photon.Hashtable gameStartedProps = new ExitGames.Client.Photon.Hashtable { { "isGameStarted", false } };
+        PhotonNetwork.CurrentRoom.SetCustomProperties(gameStartedProps);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

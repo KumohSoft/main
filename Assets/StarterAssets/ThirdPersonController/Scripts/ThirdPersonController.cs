@@ -130,6 +130,7 @@ namespace StarterAssets
 
         private int 쥐목숨 = 2;
         private bool 쥐맞음 = false;
+        private float 쥐무적time = 2f;
         public bool live = true;
         private bool 순간이동live = true;
 
@@ -435,12 +436,12 @@ namespace StarterAssets
 
                 if (쥐맞음)
                 {
-                    if (skillTime > 0)
+                    if (쥐무적time > 0)
                     {
-                        skillTime -= Time.deltaTime;
-                        if (skillTime < 0)
+                        쥐무적time -= Time.deltaTime;
+                        if (쥐무적time < 0)
                         {
-                            skillTime = 2;//스킬 time을 초기화
+                            쥐무적time = 2;//스킬 time을 초기화
                             쥐맞음 = false;
                             MoveSpeed = 2.0f;
                             SprintSpeed = 5.335f;

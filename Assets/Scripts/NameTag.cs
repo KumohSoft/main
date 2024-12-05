@@ -33,8 +33,12 @@ public class NameTag : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        Vector3 lookDirection = Camera.main.transform.forward; // 카메라의 바라보는 방향
-        lookDirection.y = 0; // Y축 방향을 0으로 설정하여 수평으로만 회전
-        transform.rotation = Quaternion.LookRotation(lookDirection); // 새로운 방향으로 회전
+        if(Camera.main!=null)
+        {
+            Vector3 lookDirection = Camera.main.transform.forward; // 카메라의 바라보는 방향
+            lookDirection.y = 0; // Y축 방향을 0으로 설정하여 수평으로만 회전
+            transform.rotation = Quaternion.LookRotation(lookDirection); // 새로운 방향으로 회전
+        }
+        
     }
 }
