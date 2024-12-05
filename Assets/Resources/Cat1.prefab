@@ -678,7 +678,6 @@ MonoBehaviour:
   LockCameraPosition: 0
   mainCam: {fileID: 6422199454059552165}
   playerFollowCamera: {fileID: 6264182991121256991}
-  skillTime: 4
   skillImage: {fileID: 0}
   renderers:
   - {fileID: 3704338830592852979}

@@ -119,7 +119,10 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
-        public float skillTime = 4f;
+        private float skillTime ;
+        private float skillcoolTime ;
+        private float skill지속시간;
+        private float skill쿨타임;
         //public GameObject skillTimeObject;
         public Image skillImage;
         private bool isAttackingSkill = false;
@@ -320,6 +323,10 @@ namespace StarterAssets
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트게이지");
                     skillImage = temp.GetComponent<Image>();
+                    skill지속시간 = 10f;
+                    skill쿨타임 = 30f;
+                    skillTime = skill지속시간;
+                    skillcoolTime = skill쿨타임;
                 }
                 else if (networkManager.MySkill == 2 && gameObject.CompareTag("cat"))
                 {
@@ -327,6 +334,10 @@ namespace StarterAssets
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("헤이스트게이지");
                     skillImage = temp.GetComponent<Image>();
+                    skill지속시간 = 4f;
+                    skill쿨타임 = 20f;
+                    skillTime = skill지속시간;
+                    skillcoolTime = skill쿨타임;
                 }
 
             }
@@ -381,16 +392,19 @@ namespace StarterAssets
                 }
                 if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
                 {
-                    float time = skillTime / 4;
-                    skillImage.fillAmount = time;
+                    //float time = skillTime / 4;
+                    float skilltime = skillcoolTime / skill쿨타임;
+                    skillImage.fillAmount = skilltime;
+                    //skillImage.fillAmount = time;
                     if (skillTime > 0)
                     {
                         skillTime -= Time.deltaTime;
+                        
                         if (skillTime < 0)
                         {
-                            skillTime = 4;//스킬 time을 초기화
-                            isAttackingSkill = false;
-                            skillImage.fillAmount = 0;
+                            //스킬 time을 초기화
+                            //isAttackingSkill = false;
+                            //skillImage.fillAmount = 0;
                             if (networkManager.MySkill == 1)
                             {
                                 photonView.RPC("End은신", RpcTarget.All);
@@ -402,14 +416,23 @@ namespace StarterAssets
                             }
                         }
                     }
+                    if(skillcoolTime>0)
+                    {
+                        skillcoolTime -= Time.deltaTime;
+                        if (skillcoolTime < 0)
+                        {
+                            skillTime = skill지속시간;
+                            skillcoolTime = skill쿨타임;
+                            skillImage.fillAmount = 0;
+                            isAttackingSkill = false;
+                        }
+                    }
                 }
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
                     공격받음();
-
                 }
 
-                
                 if (쥐맞음)
                 {
                     if (skillTime > 0)

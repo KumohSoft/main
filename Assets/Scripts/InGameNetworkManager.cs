@@ -50,11 +50,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter2 == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-45, 87, 1), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
+                Mycharactor = PhotonNetwork.Instantiate("Cat1", new Vector3(-45, 153, 1), Quaternion.identity);//추후에 고양이의 NickName은 보이지 않게 설정한다...
             }
             else if (networkManager.Mycharacter2 == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 87, 1), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 153, 1), Quaternion.identity);
             }
 
         }
@@ -62,12 +62,12 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         {
             if (networkManager.Mycharacter == 0)
             {
-                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-40, 87, 1), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("쥐1", new Vector3(-40, 153, 1), Quaternion.identity);
             }
 
             else if (networkManager.Mycharacter == 1)
             {
-                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 87, 1), Quaternion.identity);
+                Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 153, 1), Quaternion.identity);
             }
         }
 
