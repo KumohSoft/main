@@ -56,6 +56,10 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject 이미보유Panel;
     public GameObject Money;
 
+    public GameObject[] mouseCheck;
+    public GameObject[] catCheck;
+    public GameObject[] skillCheck;
+
     [Header("RoomPanel")]
     public Text PlayerName;
     public Text RoomName;
@@ -604,6 +608,12 @@ public class networkManager : MonoBehaviourPunCallbacks
             GameChar1[num].SetActive(true);
             GameChar2[num].SetActive(true);
             Mycharacter = num;
+            for(int i=0; i< mouseCheck.Length; i++)
+            {
+                mouseCheck[i].SetActive(false);
+            }
+            mouseCheck[num].SetActive(true);
+
         }
     }
 
@@ -620,6 +630,12 @@ public class networkManager : MonoBehaviourPunCallbacks
             GameChar1고양이[num].SetActive(true);
             GameChar2고양이[num].SetActive(true);
             Mycharacter2 = num;
+
+            for (int i = 0; i < catCheck.Length; i++)
+            {
+                catCheck[i].SetActive(false);
+            }
+            catCheck[num].SetActive(true);
         }
     }
 
@@ -633,6 +649,12 @@ public class networkManager : MonoBehaviourPunCallbacks
         skillImage[num-1].gameObject.SetActive(true);
         MySkill = num;
         print(num);
+        for(int i=0; i<skillCheck.Length; i++)
+        {
+            skillCheck[i].SetActive(false);
+        }
+        skillCheck[num-1].SetActive(true);
+
     }
 
     public void ClickCharPlus(int num)
