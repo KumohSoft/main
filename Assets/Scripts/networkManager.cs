@@ -55,6 +55,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     public GameObject 설정Panel;
     public GameObject 이미보유Panel;
     public GameObject Money;
+    public GameObject 랭킹Panel;
 
     [Header("RoomPanel")]
     public Text PlayerName;
@@ -464,6 +465,7 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void ClickHomeBTN()
     {
+        랭킹Panel.SetActive(false);
         HomePanel.SetActive(true);
         Money.SetActive(true);
         PlayPanel.SetActive(false);
@@ -475,6 +477,7 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void ClickEnter내정보()//firebase의 데이터를 읽고 활성화 여부를 결정
     {
+        랭킹Panel.SetActive(false);
         상점Panel.SetActive(false);
         설정Panel.SetActive(false);
         MakeRoomPanel.SetActive(false);
@@ -517,6 +520,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         MakeRoomPanel.SetActive(false);
         상점Panel.SetActive(true);
         Money.SetActive(true);
+        랭킹Panel.SetActive(false);
     }
 
     public void ClickExit상점()
@@ -528,7 +532,55 @@ public class networkManager : MonoBehaviourPunCallbacks
         이미보유Panel.SetActive(false);
         Money.SetActive(true);
     }
+    public void ClickEnter랭킹()
+    {
+        내정보Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
+        랭킹Panel.SetActive(true);
+        Money.SetActive(true);
+    }
 
+    public void ClickExit랭킹()
+    {
+        랭킹Panel.SetActive(false);
+        내정보Panel.SetActive(false);
+        설정Panel.SetActive(false);
+        MakeRoomPanel.SetActive(false);
+        이미보유Panel.SetActive(false);
+        Money.SetActive(true);
+    }
+
+    public void Click랭킹Plus()
+    {
+        // 랭킹Panel에 연결된 RankingSystem 스크립트를 가져오기
+        RankingSystem rankingSystem = 랭킹Panel.GetComponent<RankingSystem>();
+
+        if (rankingSystem != null)
+        {
+            // RankingSystem 스크립트의 plusBtn 메서드 실행
+            rankingSystem.plusBtn();
+        }
+        else
+        {
+            Debug.LogError("RankingSystem 스크립트가 랭킹Panel에 연결되어 있지 않습니다.");
+        }
+    }
+    public void Click랭킹Minus()
+    {
+        // 랭킹Panel에 연결된 RankingSystem 스크립트를 가져오기
+        RankingSystem rankingSystem = 랭킹Panel.GetComponent<RankingSystem>();
+
+        if (rankingSystem != null)
+        {
+            // RankingSystem 스크립트의 plusBtn 메서드 실행
+            rankingSystem.minusBtn();
+        }
+        else
+        {
+            Debug.LogError("RankingSystem 스크립트가 랭킹Panel에 연결되어 있지 않습니다.");
+        }
+    }
     public void ClickCharactorImage(int num)//쥐를 선택하는 함수
     {
         if (firebaseLogin.playerInfo.Character[2*num] ==1)

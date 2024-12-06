@@ -5,6 +5,12 @@ using Firebase;
 using Firebase.Extensions;
 using Firebase.Firestore;
 using System;
+<<<<<<< Updated upstream
+=======
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
+>>>>>>> Stashed changes
 
 public class firebaseLogin : MonoBehaviour
 {
@@ -13,6 +19,7 @@ public class firebaseLogin : MonoBehaviour
     private FirebaseFirestore db;
     private FirebaseApp app;
     private ListenerRegistration listenerRegistration;
+    public RankingSystem rankingSystem;
 
     public InputField nickName;
     public InputField signUpEmail;
@@ -30,6 +37,7 @@ public class firebaseLogin : MonoBehaviour
 
     public int Level;
     public int Gold;
+    public string playerNickName;
 
     public static PlayerInfo playerInfo;//static으로 선언하고 networkManager에서 접근
 
@@ -67,8 +75,25 @@ public class firebaseLogin : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        GameObject currentObject = EventSystem.current.currentSelectedGameObject;
 
-    }
+        if (currentObject == email.gameObject && Input.GetKeyDown(KeyCode.Tab))
+        {
+            EventSystem.current.SetSelectedGameObject(password.gameObject);
+        }
+        else if (currentObject == signUpEmail.gameObject && Input.GetKeyDown(KeyCode.Tab))
+        {
+            EventSystem.current.SetSelectedGameObject(signUpPassword.gameObject);
+        }
+        else if (currentObject == signUpPassword.gameObject && Input.GetKeyDown(KeyCode.Tab))
+        {
+            EventSystem.current.SetSelectedGameObject(signUpPassword2.gameObject);
+        }
+        else if (currentObject == signUpPassword2.gameObject && Input.GetKeyDown(KeyCode.Tab))
+        {
+            EventSystem.current.SetSelectedGameObject(nickName.gameObject);
+        }
+}
     public void Create()
     {
         auth.CreateUserWithEmailAndPasswordAsync(signUpEmail.text, signUpPassword.text).ContinueWithOnMainThread(task =>
@@ -146,7 +171,7 @@ public class firebaseLogin : MonoBehaviour
         {
             PlayerInfo temp = snapshot.ConvertTo<PlayerInfo>();
             playerInfo = temp;
-            string playerNickName = playerInfo.NickName;
+            playerNickName = playerInfo.NickName;
             level.text = "Level:" + playerInfo.Level.ToString();
             gold.text = playerInfo.Gold.ToString() + "$";
             if (!sig)
@@ -260,4 +285,52 @@ public class firebaseLogin : MonoBehaviour
             listenerRegistration = null;
         }
     }
+<<<<<<< Updated upstream
+=======
+
+    IEnumerator 오류textTime(string text)
+    {
+        오류text.text =text;
+        오류text.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        오류text.gameObject.SetActive(false);
+    }
+    IEnumerator 로그인오류textTime()
+    {
+        로그인오류text.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        로그인오류text.gameObject.SetActive(false);
+    }
+
+    public event Action OnRankingDataFetched;
+
+    public void FetchAndStoreRanking()
+    {
+        List<PlayerInfo> playerList = rankingSystem.playerList;
+        db.Collection("PlayerInfos").GetSnapshotAsync().ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCompleted && !task.IsCanceled && !task.IsFaulted)
+            {
+                QuerySnapshot snapshot = task.Result;
+                playerList.Clear();
+
+                foreach (DocumentSnapshot document in snapshot.Documents)
+                {
+                    PlayerInfo player = document.ConvertTo<PlayerInfo>();
+                    playerList.Add(player);
+                }
+
+                // 랭킹 정렬
+                playerList.Sort((a, b) => b.Level.CompareTo(a.Level));
+
+                Debug.Log("Ranking data fetched and sorted.");
+            }
+            else
+            {
+                Debug.LogError("Failed to fetch ranking data.");
+            }
+        });
+    }
+
+>>>>>>> Stashed changes
 }
