@@ -174,8 +174,11 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void LeftRoom()
     {
-        photonView.RPC("ReSetMynumRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.NickName);
-        PhotonNetwork.LeaveRoom();
+        if(PhotonNetwork.InRoom)
+        {
+            photonView.RPC("ReSetMynumRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.NickName);
+            PhotonNetwork.LeaveRoom();
+        }
     }
 
     bool roomToLobby = false;
@@ -224,7 +227,7 @@ public class networkManager : MonoBehaviourPunCallbacks
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
             }
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 11; i++)
             {
                 ChatText[i].text = " ";
             }

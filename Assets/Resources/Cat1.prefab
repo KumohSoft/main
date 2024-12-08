@@ -686,6 +686,9 @@ MonoBehaviour:
   live: 1
   nickName: {fileID: 8363249230166289908}
   "\uC950\uB36B\uC0DD\uC131position": {fileID: 201842193865702031}
+  lightPanel: {fileID: 0}
+  flash: {fileID: 0}
+  flashlight: {fileID: 0}
   isAttacking: 0
 --- !u!114 &2348226745518899393
 MonoBehaviour:

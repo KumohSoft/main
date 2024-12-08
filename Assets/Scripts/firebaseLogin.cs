@@ -307,4 +307,15 @@ public class firebaseLogin : MonoBehaviour
         yield return new WaitForSeconds(2f);
         ·Î±×ÀÎ¿À·ùtext.gameObject.SetActive(false);
     }
+
+    public void °ñµåÈ¹µæ(int num)
+    {
+        playerInfo.Gold+=num;
+        SavePlayerData();
+    }
+    public void °æÇèÄ¡È¹µæ(int num)
+    {
+        playerInfo.Level+=num;
+        SavePlayerData();
+    }
 }

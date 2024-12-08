@@ -20,9 +20,21 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     public Text 치즈개수Text;
     public DoorOpen DoorOpenscript;
     public GameObject Lobby캔버스;
-    private int 치즈개수 = 10;
+    public GameObject GameOverPanel;
+    public Text 승리문구;
+    public Text GameOverText;
+    public Text 경험치Text;
+    public Text 골드Text;
+
+    private int 치즈개수 = 1;
     private int 쥐목숨 = 2;
     private int count = 0;
+
+    firebaseLogin firebasescript;
+
+    private bool 게임진행여부=true;
+    
+   
 
     int 사망수 = 0;
     private List<Vector3> spawnPositions = new List<Vector3> {
@@ -73,8 +85,6 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                 {
                     Mycharactor = PhotonNetwork.Instantiate("제리1", new Vector3(-40, 153, 1), Quaternion.identity);
                 }
-            
-                
         }
        
         photonView.RPC("LoadComplete", RpcTarget.MasterClient);
@@ -83,15 +93,16 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     private void OnTriggerEnter(Collider other)
     {
-        if(photonView.IsMine && gameObject.CompareTag("mouse") && PhotonNetwork.IsMasterClient)
+        if(photonView.IsMine && other.gameObject.CompareTag("mouse") && PhotonNetwork.IsMasterClient&& 게임진행여부)
         {
-            photonView.RPC("GameOverRPC", RpcTarget.All,1);
+            게임진행여부 = false;
+            photonView.RPC("GameOverRPC", RpcTarget.All,0);
         }
     }
 
     void Start()
     {
-        
+        firebasescript= FindObjectOfType<firebaseLogin>();
     }
 
     void Update()
@@ -216,10 +227,24 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     int Playercount = 0;
     [PunRPC]
-    void ConfirmDestroy()
+    void ConfirmDestroy(int viewnum)
     {
-        Playercount++;
-        if(Playercount==PhotonNetwork.PlayerList.Length)
+        StartCoroutine(CheckDestroy(viewnum));
+    }
+    IEnumerator CheckDestroy(int viewnum)
+    {
+        while(true)
+        {
+            PhotonView targetView = PhotonView.Find(viewnum);
+
+            if (targetView==null)
+            {
+                Playercount++;
+                break;
+            }
+            yield return null;
+        }
+        if (Playercount == PhotonNetwork.PlayerList.Length)
         {
             Time.gameObject.SetActive(false);
 
@@ -236,10 +261,9 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     }
     IEnumerator DestroyMyCharacter()
     {
+        int viewID = Mycharactor.GetComponent<PhotonView>().ViewID;
         if (Mycharactor != null)
         {
-            int viewID = photonView.ViewID;
-
             PhotonNetwork.Destroy(Mycharactor);
             Debug.Log("Destroying Mycharactor...");
 
@@ -258,15 +282,34 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             }
         }
 
-        photonView.RPC("ConfirmDestroy", RpcTarget.All);
+        photonView.RPC("ConfirmDestroy", RpcTarget.All, viewID);
 
     }
     IEnumerator GameOver코루틴(int num)
     {
-        Time.gameObject.SetActive(true);
+        GameOverPanel.SetActive(true);
+        if(num==1)
+        {
+            승리문구.text = "Cat Win!";
+            firebasescript.경험치획득(20);
+            firebasescript.골드획득(10);
+            경험치Text.text = "얻은 경험치:" + 20.ToString();
+            골드Text.text = "얻은 골드:" + 10.ToString();
+        }
+        else
+        {
+            승리문구.text = "Mouse Win!";
+            firebasescript.경험치획득(20);
+            firebasescript.골드획득(10);
+            경험치Text.text = "얻은 경험치:" + 20.ToString();
+            골드Text.text = "얻은 골드:" + 10.ToString();
+        }
+        
+        
+        //Time.gameObject.SetActive(true);
         for (int i = 10; i >= 0; i--)
         {
-            Time.text = "Game Over"+"\n"+i.ToString()+"초 후 로비로 돌아갑니다.";
+            GameOverText.text = i.ToString()+"초 후 로비로 돌아갑니다.";
             yield return new WaitForSeconds(1f);
         }
         StartCoroutine(DestroyMyCharacter());

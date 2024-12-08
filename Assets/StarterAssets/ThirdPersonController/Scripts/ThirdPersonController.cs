@@ -151,6 +151,13 @@ namespace StarterAssets
         private GameObject 쥐덫;
         private Text 쥐덫개수text;
         public GameObject 쥐덫생성position;
+        private bool lightflag=false;
+        public GameObject lightPanel;
+
+        GameObject falshImage;
+        public GameObject flash;
+        public GameObject flashlight;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -172,6 +179,11 @@ namespace StarterAssets
         private void OnTriggerEnter(Collider other)
         {
             ThirdPersonController parentScript = GetComponent<ThirdPersonController>();
+
+            if(photonView.IsMine && gameObject.CompareTag("cat")&& other.gameObject.CompareTag("light")&& !lightflag)
+            {
+                StartCoroutine(빛맞음());
+            }
 
             if (photonView.IsMine && gameObject.CompareTag("mouse"))
             {
@@ -299,6 +311,9 @@ namespace StarterAssets
                 GameObject 발전기Obejct = GameObject.Find("게이지Slider");
                 발전기 = 발전기Obejct.GetComponent<Slider>();
                 발전기Obejct.SetActive(false);
+
+                lightPanel= GameObject.Find("lightPanel");
+                lightPanel.SetActive(false);
                 //skillTimeObject = GameObject.Find("스킬");
                 if (networkManager.MySkill == 0 || gameObject.CompareTag("mouse"))
                 {
@@ -306,6 +321,8 @@ namespace StarterAssets
                     temp1.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트");
                     temp.SetActive(false);
+                    falshImage = GameObject.Find("후레쉬");
+                    falshImage.SetActive(false);
                     if (gameObject.CompareTag("mouse"))
                     {
                         쥐덫 = GameObject.Find("쥐덫");
@@ -322,6 +339,8 @@ namespace StarterAssets
                 {
                     GameObject temp1 = GameObject.Find("헤이스트");
                     temp1.SetActive(false);
+                    GameObject temp2 = GameObject.Find("후레쉬");
+                    temp2.SetActive(false);
                     GameObject temp = GameObject.Find("다크사이트게이지");
                     skillImage = temp.GetComponent<Image>();
                     skill지속시간 = 10f;
@@ -333,6 +352,8 @@ namespace StarterAssets
                 {
                     GameObject temp1 = GameObject.Find("다크사이트");
                     temp1.SetActive(false);
+                    GameObject temp2 = GameObject.Find("후레쉬");
+                    temp2.SetActive(false);
                     GameObject temp = GameObject.Find("헤이스트게이지");
                     skillImage = temp.GetComponent<Image>();
                     skill지속시간 = 4f;
@@ -365,6 +386,22 @@ namespace StarterAssets
                 {
                     _animator.SetTrigger("MoveToAttack");
                     isAttacking = true;
+                }
+
+                if (Input.GetMouseButtonDown(1) && gameObject.CompareTag("mouse")&& falshImage.activeSelf)
+                {
+                    //RPC
+                    photonView.RPC("falshOn", RpcTarget.All);
+                }
+                if (Input.GetKeyDown(KeyCode.P) & gameObject.CompareTag("mouse"))
+                {
+                    falshImage.SetActive(false);
+                    photonView.RPC("falshOff", RpcTarget.All);
+                }
+                if (Input.GetKeyDown(KeyCode.L) & gameObject.CompareTag("mouse"))
+                {
+                    falshImage.SetActive(true);
+                    photonView.RPC("falshGet", RpcTarget.All);
                 }
 
                 if (Input.GetMouseButtonDown(1) && !isAttackingSkill && gameObject.CompareTag("cat"))
@@ -935,5 +972,49 @@ namespace StarterAssets
             순간이동(spawnPositioni,1);
             
         }
+
+        [PunRPC]
+        void falshGet()
+        {
+            flash.SetActive(true);
+        }
+
+
+        [PunRPC]
+        void falshOn()
+        {
+            flashlight.SetActive(true);
+            StartCoroutine(falshOff2());
+        }
+
+        [PunRPC]
+        void falshOff()
+        {
+            flash.SetActive(false);
+            flashlight.SetActive(false);
+
+        }
+
+        IEnumerator falshOff2()
+        {
+            yield return new WaitForSeconds(2f);
+            flash.SetActive(false);
+            flashlight.SetActive(false);
+            if (photonView.IsMine)
+            {
+                falshImage.SetActive(false);
+            }
+        }
+
+        IEnumerator 빛맞음()
+        {
+            lightflag = true;
+            lightPanel.SetActive(true);
+            yield return new WaitForSeconds(3f);
+            lightflag = false;
+            lightPanel.SetActive(false);
+        }
+
+        //만약 후래쉬를 획득하면 후래쉬를 RPC로 true하고 후래쉬를 가지고 있는 상태에서 사용을 하면 false한다.
     }
 }
