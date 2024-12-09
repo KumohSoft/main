@@ -1484,7 +1484,7 @@ GameObject:
   - component: {fileID: 3542647275038630859}
   m_Layer: 0
   m_Name: "\uC950\uB36B1"
-  m_TagString: Untagged
+  m_TagString: mouseTrap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

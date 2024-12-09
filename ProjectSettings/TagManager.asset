@@ -11,6 +11,8 @@ TagManager:
   - cheese
   - door
   - light
+  - Box
+  - box
   layers:
   - Default
   - TransparentFX

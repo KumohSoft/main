@@ -82,11 +82,17 @@ public class Chees : MonoBehaviourPun, IPunObservable
         if(flag)
         {
             inGameNetworkManager.치즈감소();
-            PhotonView view = PhotonView.Find(viewID);
-            PhotonNetwork.Destroy(view.gameObject);
+            //PhotonView view = PhotonView.Find(viewID);
+            photonView.RPC("치즈DestoryRPC", RpcTarget.All);
             flag = false;
         }
         
+    }
+
+    [PunRPC]
+    void 치즈DestoryRPC()
+    {
+        gameObject.SetActive(false);
     }
 
     public void 게이지증가()

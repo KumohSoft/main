@@ -141,6 +141,8 @@ namespace StarterAssets
         Chees temp;
         bool 문flag = false;
         DoorOpen DoorOpenscript;
+        bool boxflag = false;
+        GiftBox giftBoxscript;
 
         private GameObject 살리기TEXT;
         private Slider 발전기;
@@ -215,6 +217,13 @@ namespace StarterAssets
             {
                 치즈flag = true;
                 temp = other.gameObject.GetComponent<Chees>();
+                //temp.게이지증가();
+            }
+
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("box"))
+            {
+                boxflag = true;
+                giftBoxscript = other.gameObject.GetComponent<GiftBox>();
                 //temp.게이지증가();
             }
 
@@ -491,6 +500,17 @@ namespace StarterAssets
                 {
                     print("됨");
                     temp.게이지증가();
+                }
+
+                if(boxflag && giftBoxscript != null && Input.GetKey(KeyCode.E))
+                {
+                    print("됨");
+                    int num=giftBoxscript.게이지증가();
+                    if(num==1)
+                    {
+                        falshImage.SetActive(true);
+                        photonView.RPC("falshGet", RpcTarget.All);
+                    }
                 }
 
                 if (문flag && DoorOpenscript != null && Input.GetKey(KeyCode.E))
