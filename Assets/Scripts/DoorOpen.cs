@@ -14,6 +14,9 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     public bool flag = true;
     bool 개인flag = false;
 
+    public GameObject 탈출Object;
+    public GameObject 탈출Obejct2;
+
     private Transform gridTransform;
     InGameNetworkManager inGameNetworkManager;
 
@@ -127,7 +130,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
             발전기TEXT.SetActive(false);
             발전기.gameObject.SetActive(false);
         }
-        //inGameNetworkManager. <- 이 부분 완성 안됨
+        //여기서 콜라이더를 활성화?? 그리고 thirdperson에서 트리거로 확인? 다시 몇초뒤에 콜라이더 비활성화 저 스크립트에서는 목숨이 0일 때만만 충돌이 가능하게 하고 만약 충돌을 하고나면 몇초동안 충돌 불가능. 그리고 목숨을 업데이트 하는 함수를 ingamemanager에 보낸다.
+        //inGameNetworkManager.탈출();// <- 이 부분 완성 안됨
     }
 
     IEnumerator OpenDoorCoroutine()
@@ -149,6 +153,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
 
     IEnumerator OpenDoorCoroutine2()
     {
+        탈출Object.SetActive(true);
+        //탈출Obejct2.SetActive(false);
         float initialY = gridTransform.localPosition.y;
         float targetY = initialY + targetYOffset;
 
@@ -175,6 +181,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
 
             yield return null; // 다음 프레임까지 대기
         }
+        탈출Object.SetActive(false);
+        //탈출Obejct2.SetActive(true);
     }
 
     void ShowMessage(string message)

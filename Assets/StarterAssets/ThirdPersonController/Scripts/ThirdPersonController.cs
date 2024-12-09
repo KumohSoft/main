@@ -160,6 +160,8 @@ namespace StarterAssets
         public GameObject flash;
         public GameObject flashlight;
 
+        [Header("Sound")]
+        public AudioClip AttackSound;
         private bool IsCurrentDeviceMouse
         {
             get
@@ -196,7 +198,7 @@ namespace StarterAssets
                 }
             }
 
-            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("mouse"))
+            /*if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("mouse"))
             {
                 Debug.Log("충돌 발생: " + other.name);
                 ThirdPersonController temp = other.GetComponent<ThirdPersonController>();
@@ -212,7 +214,7 @@ namespace StarterAssets
                     }
                 }
 
-            }
+            }*/
             if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
             {
                 치즈flag = true;
@@ -233,13 +235,22 @@ namespace StarterAssets
                 DoorOpenscript = other.gameObject.GetComponent<DoorOpen>();
                 //temp.게이지증가();
             }
+
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("Escape")&&쥐목숨==0)
+            {
+                쥐목숨 = 2;
+                if (photonView.IsMine)//이 부분을 감옥 로직으로 바꿔야하는데 감옥 문을 열면 문에 콜라이더를 하나 생성해서 그거에 들어가면 목숨을 2로 바꾸고 UPDATE한다?? 만약 목숨이 0이면 충돌이 가능하게
+                {
+                    inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);//업데이트 하면서 감옥에 있는 사람의 수를 조정
+                }//
+            }
         }
 
         private void OnTriggerStay(Collider other)
         {
-            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("cheese"))
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("Prison")&& 쥐목숨 == 0)
             {
-
+                inGameNetworkManager.탈출문Open();
             }
         }
 
@@ -256,8 +267,10 @@ namespace StarterAssets
                 문flag = false;
                 DoorOpenscript = null;
             }
-
-
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("Prison"))
+            {
+                inGameNetworkManager.탈출문Close();
+            }
         }
 
         private void Awake()
@@ -402,7 +415,7 @@ namespace StarterAssets
                     //RPC
                     photonView.RPC("falshOn", RpcTarget.All);
                 }
-                if (Input.GetKeyDown(KeyCode.P) & gameObject.CompareTag("mouse"))
+               /* if (Input.GetKeyDown(KeyCode.P) & gameObject.CompareTag("mouse"))
                 {
                     falshImage.SetActive(false);
                     photonView.RPC("falshOff", RpcTarget.All);
@@ -412,7 +425,7 @@ namespace StarterAssets
                     falshImage.SetActive(true);
                     photonView.RPC("falshGet", RpcTarget.All);
                 }
-
+*/
                 if (Input.GetMouseButtonDown(1) && !isAttackingSkill && gameObject.CompareTag("cat"))
                 {
                     // _animator.SetTrigger("MoveToAttack");
@@ -475,10 +488,10 @@ namespace StarterAssets
                         }
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.Q))
+                /*if (Input.GetKeyDown(KeyCode.Q))
                 {
                     공격받음();
-                }
+                }*/
 
                 if (쥐맞음)
                 {
@@ -780,13 +793,13 @@ namespace StarterAssets
         {
             print("살아남");
             live = true;
-            쥐목숨 = 2;
-
+            
             _animator.SetTrigger("DieToMove");
-            if (photonView.IsMine)
+             /*쥐목숨 = 2;
+            if (photonView.IsMine)//이 부분을 감옥 로직으로 바꿔야하는데 감옥 문을 열면 문에 콜라이더를 하나 생성해서 그거에 들어가면 목숨을 2로 바꾸고 UPDATE한다?? 만약 목숨이 0이면 충돌이 가능하게
             {
                 inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
-            }
+            }*/
         }
 
         public void OnAttackEnd()
@@ -901,7 +914,7 @@ namespace StarterAssets
                 }
                 if (쥐목숨 == 0)//왜 따로 if문을 사용?? 흠
                 {
-                    
+                    쥐맞음 = true;//여기서도 해줘야함.
                     if (photonView.IsMine)
                     {
                         _animator.ResetTrigger("DieToMove");

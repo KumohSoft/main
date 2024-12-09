@@ -26,15 +26,16 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     public Text °æÇèÄ¡Text;
     public Text °ñµåText;
 
-    private int Ä¡Áî°³¼ö = 1;
+    private int Ä¡Áî°³¼ö = 10;
     private int Áã¸ñ¼û = 2;
     private int count = 0;
 
     firebaseLogin firebasescript;
 
     private bool °ÔÀÓÁøÇà¿©ºÎ=true;
-    
-   
+    public GameObject Å»ÃâObejct2;
+
+
 
     int »ç¸Á¼ö = 0;
     private List<Vector3> spawnPositions = new List<Vector3> {
@@ -69,8 +70,6 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                 {
                     Mycharactor = PhotonNetwork.Instantiate("Tom1", new Vector3(-45, 153, 1), Quaternion.identity);
                 }
-            
-            
 
         }
         else
@@ -107,18 +106,18 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        /*if (Input.GetKeyDown(KeyCode.K))
         {
-            /*Cursor.lockState = CursorLockMode.None;
+            *//*Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             networkManager.LobbyÄµ¹ö½º.SetActive(true);
-            SceneManager.LoadScene("LobbyScene");*/
+            SceneManager.LoadScene("LobbyScene");*//*
             if(photonView.IsMine)
             {
                 photonView.RPC("GameOverRPC", RpcTarget.All, 1);
             }
             
-        }
+        }*/
     }
 
 
@@ -188,6 +187,8 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     public void Áã¸ñ¼ûUpdate(string NickName,int count)
     {
+
+        
         photonView.RPC("Áã¸ñ¼ûUpdateRPC", RpcTarget.All,NickName,count);
     }
     [PunRPC]
@@ -201,6 +202,12 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                 break;
             }
         }
+        if(count==2)
+        {
+            »ç¸Á¼ö--;//¿©±â¼­ Á¶Á¤ÇÑ´Ù. »ç¸Á¼ö¸¦
+            print("»ç¸Á¼ö:" + »ç¸Á¼ö);
+        }
+        
     }
 
     IEnumerator CountStart(Vector3 spawnPositioni)
@@ -291,10 +298,10 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         if(num==1)
         {
             ½Â¸®¹®±¸.text = "Cat Win!";
-            firebasescript.°æÇèÄ¡È¹µæ(20);
-            firebasescript.°ñµåÈ¹µæ(10);
-            °æÇèÄ¡Text.text = "¾òÀº °æÇèÄ¡:" + 20.ToString();
-            °ñµåText.text = "¾òÀº °ñµå:" + 10.ToString();
+            firebasescript.°æÇèÄ¡È¹µæ(30);
+            firebasescript.°ñµåÈ¹µæ(15);
+            °æÇèÄ¡Text.text = "¾òÀº °æÇèÄ¡:" + 30.ToString();
+            °ñµåText.text = "¾òÀº °ñµå:" + 15.ToString();
         }
         else
         {
@@ -332,11 +339,21 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     public void Å»Ãâ()
     {
+        //°¨¿Á ÄÝ¶óÀÌ´õ¸¦ È°¼ºÈ­ÇÑ´Ù.
         photonView.RPC("Å»ÃâRPC", RpcTarget.All);
     }
 
     public void Å»ÃâRPC()
     {
         »ç¸Á¼ö=0;
+    }
+
+    public void Å»Ãâ¹®Open()
+    {
+        Å»ÃâObejct2.SetActive(false);
+    }
+    public void Å»Ãâ¹®Close()
+    {
+        Å»ÃâObejct2.SetActive(true);
     }
 }

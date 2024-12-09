@@ -661,7 +661,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
   - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
   - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
-  FootstepAudioVolume: 0.3
+  FootstepAudioVolume: 1
   JumpHeight: 1.2
   Gravity: -15
   JumpTimeout: 0.3
@@ -685,6 +685,9 @@ MonoBehaviour:
   live: 1
   nickName: {fileID: 8363249230166289908}
   "\uC950\uB36B\uC0DD\uC131position": {fileID: 201842193865702031}
+  lightPanel: {fileID: 0}
+  flash: {fileID: 0}
+  flashlight: {fileID: 0}
   isAttacking: 0
 --- !u!114 &2348226745518899393
 MonoBehaviour:
