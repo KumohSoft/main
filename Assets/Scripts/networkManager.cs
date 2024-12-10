@@ -405,7 +405,7 @@ public class networkManager : MonoBehaviourPunCallbacks
                 playerBtn[i].interactable = false;
                 for(int j=0; j<4; j++)
                 {
-                    PlayerChar[i].transform.GetChild(playercharint[j]).gameObject.SetActive(false);
+                    PlayerChar[i].transform.GetChild(j).gameObject.SetActive(false);
                 }
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
