@@ -403,7 +403,10 @@ public class networkManager : MonoBehaviourPunCallbacks
             else
             {
                 playerBtn[i].interactable = false;
-                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
+                for(int j=0; j<4; j++)
+                {
+                    PlayerChar[i].transform.GetChild(playercharint[j]).gameObject.SetActive(false);
+                }
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
             }
