@@ -130,7 +130,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if(∞≥¿Œflag)
         {

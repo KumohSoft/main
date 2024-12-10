@@ -136,7 +136,7 @@ public class GiftBox : MonoBehaviourPun, IPunObservable
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (∞≥¿Œflag)
         {
