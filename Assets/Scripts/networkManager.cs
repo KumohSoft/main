@@ -90,6 +90,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     int[] playercharint = new int[8];
     private int slotNum=0;
     // Start is called before the first frame update
+
     void Start()
     {
         LobbyÄµ¹ö½º= GameObject.Find("LobbyCanvas");

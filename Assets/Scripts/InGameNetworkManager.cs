@@ -43,6 +43,10 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         new Vector3(-57.4f, 6.227f, -18.27f),
         new Vector3(-30f, 6.227f, -18.27f),
         new Vector3(-44.56f, 6.227f, -10) };
+
+    public AudioSource CheeseSound;
+
+
     void Awake()
     {
         PhotonNetwork.SendRate = 60;
@@ -128,6 +132,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void 치즈개수RPC()
     {
+        CheeseSound.Play();
         치즈개수--;
         치즈개수Text.text = "치즈개수:" + 치즈개수.ToString();
         if (치즈개수 == 0)

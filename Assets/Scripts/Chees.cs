@@ -53,6 +53,8 @@ public class Chees : MonoBehaviourPun, IPunObservable
             PhotonView temp = other.gameObject.GetComponent<PhotonView>();
             if (temp!=null&&temp.IsMine)
             {
+                발전기TEXT.SetActive(true);
+                발전기.gameObject.SetActive(true);
                 발전기.value = 게이지;
             }
         }
@@ -99,7 +101,9 @@ public class Chees : MonoBehaviourPun, IPunObservable
     {
         photonView.RPC("게이지증가RPC", RpcTarget.MasterClient);
         발전기.value = 게이지;
-        if(게이지>=발전기.maxValue)
+        발전기TEXT.SetActive(true);
+        발전기.gameObject.SetActive(true);
+        if (게이지>=발전기.maxValue)
         {
             발전기TEXT.SetActive(false);
             발전기.gameObject.SetActive(false);

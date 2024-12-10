@@ -69,6 +69,7 @@ MonoBehaviour:
   - "\uC544\uC774\uD15C\uD68D\uB4DD"
   - "\uCE58\uC988DestoryRPC"
   - "\uC544\uC544\uD15CDestroyRPC"
+  - AttackSoundRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

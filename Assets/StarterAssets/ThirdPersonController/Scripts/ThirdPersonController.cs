@@ -161,7 +161,9 @@ namespace StarterAssets
         public GameObject flashlight;
 
         [Header("Sound")]
-        public AudioClip AttackSound;
+        public AudioSource AttackSound;
+        public AudioSource FlashSound;
+        
         private bool IsCurrentDeviceMouse
         {
             get
@@ -260,6 +262,12 @@ namespace StarterAssets
             {
                 치즈flag = false;
                 temp = null;
+            }
+
+            if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("box"))
+            {
+                boxflag = false;
+                giftBoxscript = null;
             }
 
             if (photonView.IsMine && gameObject.CompareTag("mouse") && other.gameObject.CompareTag("door"))
@@ -406,6 +414,7 @@ namespace StarterAssets
 
                 if (Input.GetMouseButtonDown(0) && !isAttacking && (gameObject.CompareTag("cat")))
                 {
+                    photonView.RPC("AttackSoundRPC", RpcTarget.All);
                     _animator.SetTrigger("MoveToAttack");
                     isAttacking = true;
                 }
@@ -511,6 +520,7 @@ namespace StarterAssets
                 
                 if (치즈flag && temp != null && Input.GetKey(KeyCode.E))
                 {
+                    
                     print("됨");
                     temp.게이지증가();
                 }
@@ -521,6 +531,7 @@ namespace StarterAssets
                     int num=giftBoxscript.게이지증가();
                     if(num==1)
                     {
+                        FlashSound.Play();
                         falshImage.SetActive(true);
                         photonView.RPC("falshGet", RpcTarget.All);
                     }
@@ -1048,6 +1059,11 @@ namespace StarterAssets
             lightPanel.SetActive(false);
         }
 
+        [PunRPC]
+        void AttackSoundRPC()
+        {
+            AttackSound.Play();
+        }
         //만약 후래쉬를 획득하면 후래쉬를 RPC로 true하고 후래쉬를 가지고 있는 상태에서 사용을 하면 false한다.
     }
 }

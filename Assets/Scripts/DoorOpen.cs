@@ -20,6 +20,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     private Transform gridTransform;
     InGameNetworkManager inGameNetworkManager;
 
+    [Header("Sound")]
+    public AudioSource SwitchSound;
     private void Start()
     {
         // Grid라는 자식 오브젝트를 찾습니다.
@@ -63,6 +65,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
             PhotonView temp = other.gameObject.GetComponent<PhotonView>();
             if (temp != null && temp.IsMine)
             {
+                발전기TEXT.SetActive(true);
+                발전기.gameObject.SetActive(true);
                 발전기.value = 게이지;
             }
         }
@@ -90,6 +94,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     {
         photonView.RPC("게이지증가RPC", RpcTarget.MasterClient);
         발전기.value = 게이지;
+        발전기TEXT.SetActive(true);
+        발전기.gameObject.SetActive(true);
         if (게이지 >= 발전기.maxValue)
         {
             발전기TEXT.SetActive(false);
@@ -111,6 +117,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     }
     public void Open()
     {
+
         ShowMessage("문이 열렸습니다!\n탈출하세요!");
         StartCoroutine(OpenDoorCoroutine());
         if (개인flag)
@@ -124,6 +131,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     {
         ShowMessage("문이 열렸습니다!\n탈출하세요!");
         게이지 = 0;
+        SwitchSound.Play();
         StartCoroutine(OpenDoorCoroutine2());
         if (개인flag)
         {
