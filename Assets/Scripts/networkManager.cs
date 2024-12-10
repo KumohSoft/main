@@ -204,7 +204,7 @@ public class networkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "¥‘¿Ã ≈¿Â«œºÃΩ¿¥œ¥Ÿ</color>", otherPlayer.NickName);
         if (PhotonNetwork.IsMasterClient)
         {
-            //photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint,0);
+            photonView.RPC("UpdateGameState", RpcTarget.AllBuffered, playerReady, playercharint,0);
         }
     }
 
