@@ -8087,6 +8087,7 @@ GameObject:
   - component: {fileID: 540387832}
   - component: {fileID: 540387834}
   - component: {fileID: 540387835}
+  - component: {fileID: 540387836}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8282,6 +8283,21 @@ MonoBehaviour:
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &540387836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540387831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82375540b9c96824b95febd40c3bfe4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resolutionDropdown: {fileID: 2009012530}
+  screenModeDropdown: {fileID: 1896842334}
+  masterVolumeSlider: {fileID: 1426820817}
 --- !u!1 &546526397
 GameObject:
   m_ObjectHideFlags: 0
@@ -15248,7 +15264,6 @@ GameObject:
   - component: {fileID: 1090833779}
   - component: {fileID: 1090833781}
   - component: {fileID: 1090833780}
-  - component: {fileID: 1090833782}
   m_Layer: 5
   m_Name: "\uC124\uC815Panel"
   m_TagString: Untagged
@@ -15322,21 +15337,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1090833778}
   m_CullTransparentMesh: 1
---- !u!114 &1090833782
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1090833778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82375540b9c96824b95febd40c3bfe4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resolutionDropdown: {fileID: 2009012530}
-  screenModeDropdown: {fileID: 1896842334}
-  masterVolumeSlider: {fileID: 1426820817}
 --- !u!1 &1094753784
 GameObject:
   m_ObjectHideFlags: 0
