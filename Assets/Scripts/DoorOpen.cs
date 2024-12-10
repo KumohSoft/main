@@ -71,6 +71,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
                 발전기TEXT.SetActive(true);
                 발전기.gameObject.SetActive(true);
                 발전기.value = 게이지;
+                개인flag = true;
             }
         }
     }
