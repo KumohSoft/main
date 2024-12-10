@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using UnityEngine.InputSystem;
 public class DoorOpen : MonoBehaviourPun, IPunObservable
 {
     public float moveSpeed = 2f; // Grid가 이동하는 속도
@@ -19,6 +20,8 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
 
     private Transform gridTransform;
     InGameNetworkManager inGameNetworkManager;
+
+    private bool 감옥문flag = false;
 
     [Header("Sound")]
     public AudioSource SwitchSound;
@@ -92,12 +95,16 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
 
     public void 게이지증가()
     {
-        photonView.RPC("게이지증가RPC", RpcTarget.MasterClient);
+        if(!감옥문flag)
+        {
+            photonView.RPC("게이지증가RPC", RpcTarget.MasterClient);
+        }
         발전기.value = 게이지;
         발전기TEXT.SetActive(true);
         발전기.gameObject.SetActive(true);
-        if (게이지 >= 발전기.maxValue)
+        if (게이지 >= 발전기.maxValue&&!감옥문flag)
         {
+            감옥문flag = true;
             발전기TEXT.SetActive(false);
             발전기.gameObject.SetActive(false);
             PhotonView photonView = gameObject.GetComponent<PhotonView>();
@@ -151,7 +158,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
         while (gridTransform.localPosition.y < targetY)
         {
             Vector3 newPosition = gridTransform.localPosition;
-            newPosition.y += moveSpeed * Time.deltaTime;
+            newPosition.y += moveSpeed * Time.fixedDeltaTime;
             newPosition.y = Mathf.Min(newPosition.y, targetY); // 목표 좌표를 초과하지 않도록 제한
             gridTransform.localPosition = newPosition;
 
@@ -170,7 +177,7 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
         while (gridTransform.localPosition.y < targetY)
         {
             Vector3 newPosition = gridTransform.localPosition;
-            newPosition.y += moveSpeed * Time.deltaTime;
+            newPosition.y += moveSpeed * Time.fixedDeltaTime;
             newPosition.y = Mathf.Min(newPosition.y, targetY); // 목표 좌표를 초과하지 않도록 제한
             gridTransform.localPosition = newPosition;
 
@@ -183,13 +190,14 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
         while (gridTransform.localPosition.y > initialY)
         {
             Vector3 newPosition = gridTransform.localPosition;
-            newPosition.y -= moveSpeed * Time.deltaTime;
+            newPosition.y -= moveSpeed * Time.fixedDeltaTime;
             newPosition.y = Mathf.Max(newPosition.y, initialY); // 시작 좌표를 아래로 초과하지 않도록 제한
             gridTransform.localPosition = newPosition;
 
             yield return null; // 다음 프레임까지 대기
         }
         탈출Object.SetActive(false);
+        감옥문flag = false;
         //탈출Obejct2.SetActive(true);
     }
 
