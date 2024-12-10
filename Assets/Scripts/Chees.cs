@@ -133,8 +133,18 @@ public class Chees : MonoBehaviourPun, IPunObservable
     {
         if(개인flag)
         {
-            발전기TEXT.SetActive(false);
-            발전기.gameObject.SetActive(false);
+            if(gameObject!=null)
+            {
+                if(발전기TEXT!=null)
+                {
+                    발전기TEXT.SetActive(false);
+                }
+                if(발전기.gameObject!=null)
+                {
+                    발전기.gameObject.SetActive(false);
+                }
+            }
+            
         }
     }
 }

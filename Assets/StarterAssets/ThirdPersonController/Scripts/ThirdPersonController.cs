@@ -945,8 +945,6 @@ namespace StarterAssets
                         //그리고 다시 살린다??
                     }
                     //기절
-
-
                 }
                 print(쥐목숨);
             }
