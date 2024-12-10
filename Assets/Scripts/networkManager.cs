@@ -225,7 +225,11 @@ public class networkManager : MonoBehaviourPunCallbacks
             for (int i = 0; i < 4; i++)//방을 떠나면서 방 정보 초기화
             {
                 playerBtn[i].interactable = false;
-                PlayerChar[i].transform.GetChild(playercharint[i]).gameObject.SetActive(false);
+                for(int j=0; j<4; j++)
+                {
+                    PlayerChar[i].transform.GetChild(j).gameObject.SetActive(false);
+                }
+                
                 playerBtn[i].transform.GetChild(0).GetComponent<Text>().text = "";
                 playerBtn[i].GetComponent<Image>().color = new Color(1f, 1f, 1f);  // RGB: 255, 255, 255
             }
