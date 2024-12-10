@@ -3156,7 +3156,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &203366209
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7842,7 +7842,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8202,9 +8202,15 @@ MonoBehaviour:
   "\uC774\uBBF8\uBCF4\uC720Panel": {fileID: 604200228}
   Money: {fileID: 2005884332}
   "\uB7AD\uD0B9Panel": {fileID: 441239810}
-  mouseCheck: []
-  catCheck: []
-  skillCheck: []
+  mouseCheck:
+  - {fileID: 600493073}
+  - {fileID: 141818890}
+  catCheck:
+  - {fileID: 2052281155}
+  - {fileID: 229118142}
+  skillCheck:
+  - {fileID: 442423570}
+  - {fileID: 1018520250}
   PlayerName: {fileID: 1117767462}
   RoomName: {fileID: 524945650}
   countImage: {fileID: 186185967}
@@ -10907,7 +10913,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 725.2691, y: 390.38333}
+  m_AnchoredPosition: {x: 620, y: 390.38333}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &697503548
@@ -15258,7 +15264,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1090833778}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -373}
+  m_LocalPosition: {x: 0, y: 0, z: -500}
   m_LocalScale: {x: 0.5, y: 0.7378778, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15972,7 +15978,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -16087,7 +16093,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 540387834}
         m_TargetAssemblyTypeName: networkManager, Assembly-CSharp
-        m_MethodName: "ClickExit\uC0C1\uC810"
+        m_MethodName: ExitRoomPanelClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -23279,7 +23285,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 540387834}
         m_TargetAssemblyTypeName: networkManager, Assembly-CSharp
-        m_MethodName: "ClickExit\uC0C1\uC810"
+        m_MethodName: "ClickExit\uC124\uC815"
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -24919,6 +24925,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1630766762}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
         m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 540387834}
+        m_TargetAssemblyTypeName: networkManager, Assembly-CSharp
+        m_MethodName: GameExit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -33567,6 +33585,7 @@ GameObject:
   - component: {fileID: 2144560862}
   - component: {fileID: 2144560864}
   - component: {fileID: 2144560863}
+  - component: {fileID: 2144560865}
   m_Layer: 5
   m_Name: LoginPanel
   m_TagString: Untagged
@@ -33636,6 +33655,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2144560861}
   m_CullTransparentMesh: 1
+--- !u!114 &2144560865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144560861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ff74788538842f4eb96739bf6ef4f96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  email: {fileID: 804143619}
+  password: {fileID: 324928274}
+  nickName: {fileID: 170177627}
+  signUpEmail: {fileID: 1649285202}
+  signUpPassword: {fileID: 1890972445}
+  signUpPassword2: {fileID: 1890972445}
 --- !u!1 &2145986893
 GameObject:
   m_ObjectHideFlags: 0

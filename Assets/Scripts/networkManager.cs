@@ -647,14 +647,14 @@ public class networkManager : MonoBehaviourPunCallbacks
         랭킹Panel.SetActive(false);
     }
 
-    public void ClickExit상점()
+    public void ClickExit설정()
     {
-        상점Panel.SetActive(false);
-        내정보Panel.SetActive(false);
+        //상점Panel.SetActive(false);
+        //내정보Panel.SetActive(false);
         설정Panel.SetActive(false);
-        MakeRoomPanel.SetActive(false);
-        이미보유Panel.SetActive(false);
-        Money.SetActive(true);
+        //MakeRoomPanel.SetActive(false);
+        //이미보유Panel.SetActive(false);
+        //Money.SetActive(true);
     }
     public void ClickEnter랭킹()
     {
@@ -815,9 +815,9 @@ public class networkManager : MonoBehaviourPunCallbacks
 
     public void 설정Click()
     {
-        내정보Panel.SetActive(false);
-        상점Panel.SetActive(false);
-        MakeRoomPanel.SetActive(false);
+        //내정보Panel.SetActive(false);
+        //상점Panel.SetActive(false);
+        //MakeRoomPanel.SetActive(false);
         설정Panel.SetActive(true);
     }
 
@@ -828,8 +828,20 @@ public class networkManager : MonoBehaviourPunCallbacks
         설정Panel.SetActive(false);
         MakeRoomPanel.SetActive(true);
     }
+    public void ExitRoomPanelClick()
+    {
+        MakeRoomPanel.SetActive(false);
+    }
     public void 이미보유PanelExit()
     {
         이미보유Panel.SetActive(false);
+    }
+    public void GameExit()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 }

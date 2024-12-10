@@ -74,25 +74,8 @@ public class firebaseLogin : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GameObject currentObject = EventSystem.current.currentSelectedGameObject;
 
-        if (currentObject == email.gameObject && Input.GetKeyDown(KeyCode.Tab))
-        {
-            EventSystem.current.SetSelectedGameObject(password.gameObject);
-        }
-        else if (currentObject == signUpEmail.gameObject && Input.GetKeyDown(KeyCode.Tab))
-        {
-            EventSystem.current.SetSelectedGameObject(signUpPassword.gameObject);
-        }
-        else if (currentObject == signUpPassword.gameObject && Input.GetKeyDown(KeyCode.Tab))
-        {
-            EventSystem.current.SetSelectedGameObject(signUpPassword2.gameObject);
-        }
-        else if (currentObject == signUpPassword2.gameObject && Input.GetKeyDown(KeyCode.Tab))
-        {
-            EventSystem.current.SetSelectedGameObject(nickName.gameObject);
-        }
-}
+    }
     public void Create()
     {
         if(signUpPassword.text== signUpPassword2.text)
