@@ -459,89 +459,94 @@ namespace StarterAssets
                     쥐덫개수--;
                     쥐덫개수text.text = "쥐덫개수:" + 쥐덫개수.ToString();
                 }
-                if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
-                {
-                    //float time = skillTime / 4;
-                    float skilltime = skillcoolTime / skill쿨타임;
-                    skillImage.fillAmount = skilltime;
-                    //skillImage.fillAmount = time;
-                    if (skillTime > 0)
-                    {
-                        skillTime -= Time.deltaTime;
-                        
-                        if (skillTime < 0)
-                        {
-                            //스킬 time을 초기화
-                            //isAttackingSkill = false;
-                            //skillImage.fillAmount = 0;
-                            if (networkManager.MySkill == 1)
-                            {
-                                photonView.RPC("End은신", RpcTarget.All);
-                            }
-                            else if (networkManager.MySkill == 2)
-                            {
-                                MoveSpeed = 2.0f;
-                                SprintSpeed = 5.335f;
-                            }
-                        }
-                    }
-                    if(skillcoolTime>0)
-                    {
-                        skillcoolTime -= Time.deltaTime;
-                        if (skillcoolTime < 0)
-                        {
-                            skillTime = skill지속시간;
-                            skillcoolTime = skill쿨타임;
-                            skillImage.fillAmount = 0;
-                            isAttackingSkill = false;
-                        }
-                    }
-                }
-                /*if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    공격받음();
-                }*/
+               
+            }
+        }
 
-                if (쥐맞음)
+        private void FixedUpdate()
+        {
+            if (isAttackingSkill && skillImage != null)//만약 스킬을 가지고있다면 
+            {
+                //float time = skillTime / 4;
+                float skilltime = skillcoolTime / skill쿨타임;
+                skillImage.fillAmount = skilltime;
+                //skillImage.fillAmount = time;
+                if (skillTime > 0)
                 {
-                    if (쥐무적time > 0)
+                    skillTime -= Time.fixedDeltaTime;
+
+                    if (skillTime < 0)
                     {
-                        쥐무적time -= Time.deltaTime;
-                        if (쥐무적time < 0)
+                        //스킬 time을 초기화
+                        //isAttackingSkill = false;
+                        //skillImage.fillAmount = 0;
+                        if (networkManager.MySkill == 1)
                         {
-                            쥐무적time = 2;//스킬 time을 초기화
-                            쥐맞음 = false;
+                            photonView.RPC("End은신", RpcTarget.All);
+                        }
+                        else if (networkManager.MySkill == 2)
+                        {
                             MoveSpeed = 2.0f;
                             SprintSpeed = 5.335f;
                         }
                     }
                 }
-
-                
-                if (치즈flag && temp != null && Input.GetKey(KeyCode.E))
+                if (skillcoolTime > 0)
                 {
-                    
-                    print("됨");
-                    temp.게이지증가();
-                }
-
-                if(boxflag && giftBoxscript != null && Input.GetKey(KeyCode.E))
-                {
-                    print("됨");
-                    int num=giftBoxscript.게이지증가();
-                    if(num==1)
+                    skillcoolTime -= Time.fixedDeltaTime;
+                    if (skillcoolTime < 0)
                     {
-                        FlashSound.Play();
-                        falshImage.SetActive(true);
-                        photonView.RPC("falshGet", RpcTarget.All);
+                        skillTime = skill지속시간;
+                        skillcoolTime = skill쿨타임;
+                        skillImage.fillAmount = 0;
+                        isAttackingSkill = false;
                     }
                 }
+            }
+            /*if (Input.GetKeyDown(KeyCode.Q))
+            {
+                공격받음();
+            }*/
 
-                if (문flag && DoorOpenscript != null && Input.GetKey(KeyCode.E))
+            if (쥐맞음)
+            {
+                if (쥐무적time > 0)
                 {
-                    print("됨");
-                    DoorOpenscript.게이지증가();
+                    쥐무적time -= Time.fixedDeltaTime;
+                    if (쥐무적time < 0)
+                    {
+                        쥐무적time = 2;//스킬 time을 초기화
+                        쥐맞음 = false;
+                        MoveSpeed = 2.0f;
+                        SprintSpeed = 5.335f;
+                    }
                 }
+            }
+
+
+            if (치즈flag && temp != null && Input.GetKey(KeyCode.E))
+            {
+
+                print("됨");
+                temp.게이지증가();
+            }
+
+            if (boxflag && giftBoxscript != null && Input.GetKey(KeyCode.E))
+            {
+                print("됨");
+                int num = giftBoxscript.게이지증가();
+                if (num == 1)
+                {
+                    FlashSound.Play();
+                    falshImage.SetActive(true);
+                    photonView.RPC("falshGet", RpcTarget.All);
+                }
+            }
+
+            if (문flag && DoorOpenscript != null && Input.GetKey(KeyCode.E))
+            {
+                print("됨");
+                DoorOpenscript.게이지증가();
             }
         }
 

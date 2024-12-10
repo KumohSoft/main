@@ -121,7 +121,7 @@ public class GiftBox : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void 게이지증가RPC()
     {
-        게이지 += Time.deltaTime * 9;
+        게이지 += Time.fixedDeltaTime * 9;
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -139,8 +139,18 @@ public class GiftBox : MonoBehaviourPun, IPunObservable
     {
         if (개인flag)
         {
-            발전기TEXT.SetActive(false);
-            발전기.gameObject.SetActive(false);
+            if(gameObject!=null)
+            {
+                if(발전기TEXT.gameObject!=null)
+                {
+                    발전기TEXT.SetActive(false);
+                }
+                if(발전기.gameObject!=null)
+                {
+                    발전기.gameObject.SetActive(false);
+                }
+            }
+            
         }
     }
 }

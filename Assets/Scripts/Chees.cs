@@ -115,7 +115,7 @@ public class Chees : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void 게이지증가RPC()
     {
-        게이지 += Time.deltaTime * 9;
+        게이지 += Time.fixedDeltaTime * 9;
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
