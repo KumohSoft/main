@@ -311,10 +311,17 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         else
         {
             ½Â¸®¹®±¸.text = "Mouse Win!";
-            firebasescript.°æÇèÄ¡È¹µæ(20);
-            firebasescript.°ñµåÈ¹µæ(10);
-            °æÇèÄ¡Text.text = "¾òÀº °æÇèÄ¡:" + 20.ToString();
-            °ñµåText.text = "¾òÀº °ñµå:" + 10.ToString();
+            int exp = 10 * (PhotonNetwork.PlayerList.Length - »ç¸Á¼ö);
+            int gold = 2 * (PhotonNetwork.PlayerList.Length - »ç¸Á¼ö);
+            if (PhotonNetwork.PlayerList.Length - 1 - »ç¸Á¼ö == 0)
+            {
+                exp += 10;
+                gold += 5;
+            }
+            firebasescript.°æÇèÄ¡È¹µæ(exp);
+            firebasescript.°ñµåÈ¹µæ(gold);
+            °æÇèÄ¡Text.text = "¾òÀº °æÇèÄ¡:" + exp.ToString();
+            °ñµåText.text = "¾òÀº °ñµå:" + gold.ToString();
         }
         
         
