@@ -355,7 +355,7 @@ namespace StarterAssets
                     falshImage.SetActive(false);
                     if (gameObject.CompareTag("mouse"))
                     {
-                        쥐덫 = GameObject.Find("쥐덫");
+                        쥐덫 = GameObject.Find("쥐덫배경");
                         쥐덫.SetActive(false);
                     }
 
