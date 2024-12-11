@@ -45,6 +45,7 @@ public class firebaseLogin : MonoBehaviour
 
     public Text priceText;
     public GameObject 이미보유함Panel;
+    public Text 이미보유함Text;
 
     // Start is called before the first frame update
     void Start()
@@ -127,7 +128,7 @@ public class firebaseLogin : MonoBehaviour
                     WinCount = 0,
                     LoseCount = 0,
                     Level = 1,
-                    Character = new int[4],
+                    Character = new int[4] { 1, 1, 0, 0 },
                     Item = new int[4]
                 };
                 newdata.SetAsync(newPlayer).ContinueWithOnMainThread(task =>
@@ -256,6 +257,8 @@ public class firebaseLogin : MonoBehaviour
     {
         if(playerInfo.Gold< CharactorPrice)
         {
+            이미보유함Panel.SetActive(true);
+            이미보유함Text.text = "골드가 부족합니다";
             //돈이 부족함
         }
         else
@@ -271,6 +274,7 @@ public class firebaseLogin : MonoBehaviour
                 else
                 {
                     이미보유함Panel.SetActive(true);
+                    이미보유함Text.text = "이미 보유하고 있습니다.";
                 }
             }
             else
@@ -284,6 +288,7 @@ public class firebaseLogin : MonoBehaviour
                 else
                 {
                     이미보유함Panel.SetActive(true);
+                    이미보유함Text.text = "이미 보유하고 있습니다.";
                 }
             }
         }
