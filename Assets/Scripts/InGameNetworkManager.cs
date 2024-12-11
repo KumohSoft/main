@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using StarterAssets;
+using WebSocketSharp;
 
 public class InGameNetworkManager : MonoBehaviourPunCallbacks
 {
@@ -101,6 +102,36 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             게임진행여부 = false;
             photonView.RPC("GameOverRPC", RpcTarget.All,0);
         }
+    }
+
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.Destroy(Mycharactor);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        photonView.RPC("GameOverRPC", RpcTarget.All, 2);
+        /*print("마스터맞음?" + otherPlayer.IsMasterClient);
+        // 나간 플레이어가 마스터 클라이언트인지 확인
+        if (otherPlayer.IsMasterClient)
+        {
+            if(PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("GameOverRPC", RpcTarget.All, 0);
+            }
+        }
+        else
+        {
+            print("이ㅓㄱ");
+            if (photonView.IsMine && PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+            }
+        }
+
+        // 현재 마스터 클라이언트 확인
+        Debug.Log("Current Master Client: " + PhotonNetwork.MasterClient.NickName);*/
     }
 
     void Start()
@@ -312,7 +343,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             }
             else
             {
-                승리문구.text = "Mouse Lose!";
+                승리문구.text = "Cat Win!";
                 int exp = 10 * (PhotonNetwork.PlayerList.Length - 사망수);
                 int gold = 2 * (PhotonNetwork.PlayerList.Length - 사망수);
                 if (PhotonNetwork.PlayerList.Length - 1 - 사망수 == 0)
@@ -327,11 +358,11 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
             }
             
         }
-        else
+        else if(num==0)
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                승리문구.text = "Cat Lose!";
+                승리문구.text = "Mouse Win!";
                 firebasescript.경험치획득(10);
                 firebasescript.골드획득(10);
                 경험치Text.text = "얻은 경험치:" + 10.ToString();
@@ -353,6 +384,14 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                 골드Text.text = "얻은 골드:" + gold.ToString();
             }
             
+        }
+        else if(num==2)
+        {
+            승리문구.text = "무효!";
+            firebasescript.경험치획득(0);
+            firebasescript.골드획득(0);
+            경험치Text.text = "얻은 경험치:" + 0.ToString();
+            골드Text.text = "얻은 골드:" + 0.ToString();
         }
         
         
