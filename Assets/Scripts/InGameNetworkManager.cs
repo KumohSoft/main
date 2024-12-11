@@ -126,7 +126,6 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         else
         {
             //여기서 쥐 상태를 업데이트한다.
-            쥐목숨UpdateRPC(otherPlayer.NickName, 0);
             if (감옥set.Contains(otherPlayer.NickName))
             {
                 감옥set.Remove(otherPlayer.NickName);
@@ -143,6 +142,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
                     photonView.RPC("GameOverRPC", RpcTarget.All, 1);
                 }
             }
+            쥐목숨UpdateRPC(otherPlayer.NickName, 0);
         }
 
         // 현재 마스터 클라이언트 확인
