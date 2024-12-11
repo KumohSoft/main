@@ -8261,7 +8261,7 @@ MonoBehaviour:
   ReadyBTN: {fileID: 1308176988}
   ReadyText: {fileID: 1835098491}
   ExitBTN: {fileID: 1636820059}
-  RoomNameInput: {fileID: 0}
+  RoomNameInput: {fileID: 1900085139}
   temp: {fileID: 648856422}
 --- !u!114 &540387835
 MonoBehaviour:
