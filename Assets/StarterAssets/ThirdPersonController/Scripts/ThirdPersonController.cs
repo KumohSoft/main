@@ -912,7 +912,7 @@ namespace StarterAssets
         }
 
         [PunRPC]
-        void 공격받음RPC()//이 코드 반응속도 때문에 수정필요할듯
+        void 공격받음RPC()
         {
             if (!쥐맞음)
             {
@@ -928,7 +928,7 @@ namespace StarterAssets
                         inGameNetworkManager.쥐목숨Update(PhotonNetwork.LocalPlayer.NickName, 쥐목숨);
                     }
                 }
-                if (쥐목숨 == 0)//왜 따로 if문을 사용?? 흠
+                if (쥐목숨 == 0)
                 {
                     쥐맞음 = true;//여기서도 해줘야함.
                     if (photonView.IsMine)

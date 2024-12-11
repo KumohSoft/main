@@ -42,8 +42,8 @@ public class GameOption : MonoBehaviour
         resolutionDropdown.AddOptions(resolutionOptions);
 
         // 현재 해상도를 기본값으로 설정
-        resolutionDropdown.value = GetCurrentResolutionIndex();
-        resolutionDropdown.onValueChanged.AddListener(SetResolution);
+        //resolutionDropdown.value = GetCurrentResolutionIndex();
+        //resolutionDropdown.onValueChanged.AddListener(SetResolution);
     }
 
     // UI 초기화
@@ -56,12 +56,32 @@ public class GameOption : MonoBehaviour
         List<string> screenModeOptions = new List<string>
         {
             "전체 화면",
-            "창 모드"
+            "창 모드(1920*1080)",
+            "창 모드(1600*900)",
+            "창 모드(1366*786)",
+            "창 모드(1280*720)"
         };
         screenModeDropdown.AddOptions(screenModeOptions);
 
-        // 화면 모드 초기값 설정
-        screenModeDropdown.value = Screen.fullScreen ? 0 : 1; // 전체 화면: 0, 창 모드: 1
+        if (Screen.fullScreen)
+        {
+            screenModeDropdown.value = 0; // 전체 화면
+        }
+        else
+        {
+            // 창 모드인 경우, 현재 해상도에 맞는 옵션 선택
+            Resolution currentResolution = Screen.currentResolution;
+            if (currentResolution.width == 1920 && currentResolution.height == 1080)
+                screenModeDropdown.value = 1;
+            else if (currentResolution.width == 1600 && currentResolution.height == 900)
+                screenModeDropdown.value = 2;
+            else if (currentResolution.width == 1366 && currentResolution.height == 786)
+                screenModeDropdown.value = 3;
+            else if (currentResolution.width == 1280 && currentResolution.height == 720)
+                screenModeDropdown.value = 4;
+            else
+                screenModeDropdown.value = 1; // 기본값: 창 모드(1920*1080)
+        }
         screenModeDropdown.onValueChanged.AddListener(SetScreenMode);
 
         // 마스터 볼륨 초기값 설정
@@ -95,12 +115,29 @@ public class GameOption : MonoBehaviour
     // 화면 모드 설정
     void SetScreenMode(int index)
     {
-        // index 0: 전체 화면, 1: 창 모드
         bool isFullScreen = index == 0;
 
-        // 현재 선택된 해상도와 화면 모드 설정
-        Resolution currentResolution = resolutions[resolutionDropdown.value];
-        Screen.SetResolution(currentResolution.width, currentResolution.height, isFullScreen);
+        switch (index)
+        {
+            case 0: // 전체 화면
+                Screen.SetResolution(1920, 1080, true);
+                break;
+            case 1: // 창 모드(1920*1080)
+                Screen.SetResolution(1920, 1080, false);
+                break;
+            case 2: // 창 모드(1600*900)
+                Screen.SetResolution(1600, 900, false);
+                break;
+            case 3: // 창 모드(1366*786)
+                Screen.SetResolution(1366, 786, false);
+                break;
+            case 4: // 창 모드(1280*720)
+                Screen.SetResolution(1280, 720, false);
+                break;
+            default:
+                Debug.LogError("Unknown screen mode index");
+                break;
+        }
     }
 
     // 마스터 볼륨 설정

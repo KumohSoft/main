@@ -170,7 +170,6 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
     IEnumerator OpenDoorCoroutine2()
     {
         ≈ª√‚Object.SetActive(true);
-        //≈ª√‚Obejct2.SetActive(false);
         float initialY = gridTransform.localPosition.y;
         float targetY = initialY + targetYOffset;
 
@@ -199,7 +198,6 @@ public class DoorOpen : MonoBehaviourPun, IPunObservable
         }
         ≈ª√‚Object.SetActive(false);
         ∞®ø¡πÆflag = false;
-        //≈ª√‚Obejct2.SetActive(true);
     }
 
     void ShowMessage(string message)

@@ -185,7 +185,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 951991597223831632}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -669,6 +670,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 7625a67fe9926f645a2de71c4e40f713, type: 3}
       propertyPath: m_Name
       value: Soccer Idle
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7625a67fe9926f645a2de71c4e40f713, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7625a67fe9926f645a2de71c4e40f713, type: 3}

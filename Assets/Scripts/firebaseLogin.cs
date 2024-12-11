@@ -258,7 +258,7 @@ public class firebaseLogin : MonoBehaviour
         if(playerInfo.Gold< CharactorPrice)
         {
             이미보유함Panel.SetActive(true);
-            이미보유함Text.text = "골드가 부족합니다";
+            이미보유함Text.text = "골드가 부족합니다.";
             //돈이 부족함
         }
         else

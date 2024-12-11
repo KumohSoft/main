@@ -96,6 +96,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         LobbyÄµ¹ö½º= GameObject.Find("LobbyCanvas");
         RoomPanel2 = RoomPanel;
+        Screen.SetResolution(1920, 1080, true);
     }
 
     // Update is called once per frame

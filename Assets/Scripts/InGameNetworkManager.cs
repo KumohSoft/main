@@ -47,6 +47,8 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     public AudioSource CheeseSound;
 
+    public GameObject ESCPanel;
+
     HashSet<string> °¨¿Áset = new HashSet<string>();
 
 
@@ -157,6 +159,23 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (ESCPanel.activeSelf)
+            {
+                ESCPanel.SetActive(false);
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            else
+            {
+                ESCPanel.SetActive(true);
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+            
+
         /*if (Input.GetKeyDown(KeyCode.K))
         {
             *//*Cursor.lockState = CursorLockMode.None;
@@ -461,5 +480,23 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     public void Å»Ãâ¹®Close()
     {
         Å»ÃâObejct2.SetActive(true);
+    }
+
+    public void ³ª°¡±â()
+    {
+        PhotonNetwork.Destroy(Mycharactor);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        networkManager.LobbyÄµ¹ö½º.SetActive(true);
+        networkManager NetworkManager= FindObjectOfType<networkManager>();
+        NetworkManager.LeftRoom();
+        SceneManager.LoadScene("LobbyScene");
+    }
+    public void ESCPanelOff()
+    {
+        ESCPanel.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 }
