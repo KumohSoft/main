@@ -562,7 +562,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     {
         if (senderName == PhotonNetwork.NickName)
         {
-            msg = "<color=yellow>" + msg + "</color>";
+            msg = "<color=black>" + msg + "</color>";
         }
         else
         {
