@@ -15092,7 +15092,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1044491310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15670,6 +15670,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   popupWindow: {fileID: 1044491313}
+  input1: {fileID: 1649285202}
+  input2: {fileID: 1367305650}
+  input3: {fileID: 1890972445}
+  input4: {fileID: 170177627}
 --- !u!82 &1098197185
 AudioSource:
   m_ObjectHideFlags: 0
@@ -33671,7 +33675,7 @@ MonoBehaviour:
   password: {fileID: 324928274}
   nickName: {fileID: 170177627}
   signUpEmail: {fileID: 1649285202}
-  signUpPassword: {fileID: 1890972445}
+  signUpPassword: {fileID: 1367305650}
   signUpPassword2: {fileID: 1890972445}
 --- !u!1 &2145986893
 GameObject:

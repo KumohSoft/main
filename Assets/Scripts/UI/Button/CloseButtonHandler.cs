@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.UI;
 public class CloseButtonHandler : MonoBehaviour
 {
     public PanelHandler popupWindow;
-
+    public InputField input1,input2,input3,input4;
     public void OnButtonClick()
     {
         Vector3 originalScale = transform.localScale;
@@ -19,5 +20,9 @@ public class CloseButtonHandler : MonoBehaviour
         seq.Play().OnComplete(() => {
             popupWindow.Hide();
         });
+        input1.text = "";
+        input2.text = "";
+        input3.text = "";
+        input4.text = "";
     }
 }

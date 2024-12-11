@@ -82,7 +82,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     public Button ReadyBTN;
     public Text ReadyText;
     public Button ExitBTN;
-    
+    public InputField RoomNameInput;
 
 
     List<RoomInfo> myList = new List<RoomInfo>();
@@ -838,6 +838,7 @@ public class networkManager : MonoBehaviourPunCallbacks
     public void ExitRoomPanelClick()
     {
         MakeRoomPanel.SetActive(false);
+        RoomNameInput.text = "";
     }
     public void 이미보유PanelExit()
     {
