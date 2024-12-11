@@ -36,7 +36,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     private bool 게임진행여부=true;
     public GameObject 탈출Obejct2;
 
-
+    private string MasterNickName;
 
     int 사망수 = 0;
     private List<Vector3> spawnPositions = new List<Vector3> {
@@ -46,6 +46,8 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         new Vector3(-44.56f, 6.227f, -10) };
 
     public AudioSource CheeseSound;
+
+    HashSet<string> 감옥set = new HashSet<string>();
 
 
     void Awake()
@@ -111,32 +113,46 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        photonView.RPC("GameOverRPC", RpcTarget.All, 2);
-        /*print("마스터맞음?" + otherPlayer.IsMasterClient);
-        // 나간 플레이어가 마스터 클라이언트인지 확인
-        if (otherPlayer.IsMasterClient)
+        //photonView.RPC("GameOverRPC", RpcTarget.All, 2);
+       //rint("마스터맞음?" + otherPlayer.IsMasterClient);
+        if (otherPlayer.NickName== MasterNickName)
         {
-            if(PhotonNetwork.IsMasterClient)
+            MasterNickName = PhotonNetwork.MasterClient.NickName;
+            if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC("GameOverRPC", RpcTarget.All, 0);
             }
         }
         else
         {
-            print("이ㅓㄱ");
-            if (photonView.IsMine && PhotonNetwork.IsMasterClient)
+            //여기서 쥐 상태를 업데이트한다.
+            쥐목숨UpdateRPC(otherPlayer.NickName, 0);
+            if (감옥set.Contains(otherPlayer.NickName))
             {
-                photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+                감옥set.Remove(otherPlayer.NickName);
+                사망수--;
+                /*if (photonView.IsMine && PhotonNetwork.IsMasterClient && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+                {
+                    photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+                }*/
+            }
+            else
+            {
+                if (photonView.IsMine && PhotonNetwork.IsMasterClient && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+                {
+                    photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+                }
             }
         }
 
         // 현재 마스터 클라이언트 확인
-        Debug.Log("Current Master Client: " + PhotonNetwork.MasterClient.NickName);*/
+        Debug.Log("Current Master Client: " + PhotonNetwork.MasterClient.NickName);
     }
 
     void Start()
     {
         firebasescript= FindObjectOfType<firebaseLogin>();
+        MasterNickName = PhotonNetwork.MasterClient.NickName;
     }
 
     void Update()
@@ -220,26 +236,34 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
         Player[num-1].transform.GetChild(0).GetComponent<Text>().text = PhotonNetwork.PlayerList[num].NickName;
         Player[num - 1].transform.GetChild(2).GetComponent<Text>().text = "X"+쥐목숨.ToString();
     }
+    
 
     public void 쥐목숨Update(string NickName,int count)
-    {
-
-        
+    {   
         photonView.RPC("쥐목숨UpdateRPC", RpcTarget.All,NickName,count);
     }
     [PunRPC]
     void 쥐목숨UpdateRPC(string NickName, int count)
     {
-        for(int i=1; i<PhotonNetwork.PlayerList.Length; i++)
+        
+        for (int i=1; i<4; i++)
         {
-            if (Player[i-1].transform.GetChild(0).GetComponent<Text>().text==NickName)
+            if(Player[i-1].activeSelf)
             {
-                Player[i-1].transform.GetChild(2).GetComponent<Text>().text= "X" + count.ToString();
-                break;
+                if (Player[i - 1].transform.GetChild(0).GetComponent<Text>().text == NickName)
+                {
+                    Player[i - 1].transform.GetChild(2).GetComponent<Text>().text = "X" + count.ToString();
+                    break;
+                }
             }
+        }
+        if(count==0)
+        {
+            감옥set.Add(NickName);
         }
         if(count==2)
         {
+            감옥set.Remove(NickName);
             사망수--;//여기서 조정한다. 사망수를
             print("사망수:" + 사망수);
         }
