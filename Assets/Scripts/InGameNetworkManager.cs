@@ -34,6 +34,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     firebaseLogin firebasescript;
 
     private bool 게임진행여부=true;
+
     public GameObject 탈출Obejct2;
 
     private string MasterNickName;
@@ -50,6 +51,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     public GameObject ESCPanel;
 
     HashSet<string> 감옥set = new HashSet<string>();
+
 
 
     void Awake()
@@ -117,33 +119,37 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     {
         //photonView.RPC("GameOverRPC", RpcTarget.All, 2);
        //rint("마스터맞음?" + otherPlayer.IsMasterClient);
-        if (otherPlayer.NickName== MasterNickName)
+       if(게임진행여부)
         {
-            MasterNickName = PhotonNetwork.MasterClient.NickName;
-            if (PhotonNetwork.IsMasterClient)
+            if (otherPlayer.NickName == MasterNickName)
             {
-                photonView.RPC("GameOverRPC", RpcTarget.All, 0);
-            }
-        }
-        else
-        {
-            //여기서 쥐 상태를 업데이트한다.
-            if (감옥set.Contains(otherPlayer.NickName))
-            {
-                감옥set.Remove(otherPlayer.NickName);
-                사망수--;
-                /*if (photonView.IsMine && PhotonNetwork.IsMasterClient && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+                MasterNickName = PhotonNetwork.MasterClient.NickName;
+                if (PhotonNetwork.IsMasterClient)
                 {
-                    photonView.RPC("GameOverRPC", RpcTarget.All, 1);
-                }*/
+                    photonView.RPC("GameOverRPC", RpcTarget.All, 0);
+                }
             }
             else
             {
-                if (photonView.IsMine && PhotonNetwork.IsMasterClient && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+                //여기서 쥐 상태를 업데이트한다.
+                if (감옥set.Contains(otherPlayer.NickName))
                 {
-                    photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+                    감옥set.Remove(otherPlayer.NickName);
+                    사망수--;
+                    /*if (photonView.IsMine && PhotonNetwork.IsMasterClient && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+                    {
+                        photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+                    }*/
+                }
+                else
+                {
+                    if (photonView.IsMine && PhotonNetwork.IsMasterClient && 사망수 == PhotonNetwork.PlayerList.Length - 1)
+                    {
+                        photonView.RPC("GameOverRPC", RpcTarget.All, 1);
+                    }
                 }
             }
+       
             쥐목숨UpdateRPC(otherPlayer.NickName, 0);
         }
 
@@ -373,6 +379,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     }
     IEnumerator GameOver코루틴(int num)
     {
+        게임진행여부 = false;
         GameOverPanel.SetActive(true);
         if(num==1)
         {
@@ -456,7 +463,7 @@ public class InGameNetworkManager : MonoBehaviourPunCallbacks
     void 사망수UPRPC()
     {
         사망수++;
-        if (photonView.IsMine && PhotonNetwork.IsMasterClient &&사망수 == PhotonNetwork.PlayerList.Length - 1)
+        if (photonView.IsMine && PhotonNetwork.IsMasterClient &&사망수 == PhotonNetwork.PlayerList.Length - 1&&게임진행여부)
         {
             photonView.RPC("GameOverRPC", RpcTarget.All,1);
         }

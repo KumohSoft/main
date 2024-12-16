@@ -55,7 +55,16 @@ After two hits, a mouse is sent to jail. But be careful. They can break out of t
 Stop them and catch all the mice!
 
 ### 🎮 How to play?
-git clone ?
+1. git clone https://github.com/KumohSoft/main.git
+2. Open in the Unity
+3. Build and spread to your friends (Max 4)
+4. Play!
 
+   or
+
+1. Download 마지막빌드.zip
+2. Unzip
+3. Play!
+   
 ### 🤝 Support us
 Donation : 940302-00-959608 gukmin bank
